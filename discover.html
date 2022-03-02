@@ -1,0 +1,29 @@
+<!-- This file contains the basic HTML for the Discover/Find Stock Page -->
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Add Title to Tab -->
+        <title>Smooth Stock: Find Stock</title>
+
+        <!-- Link Page to CSS style sheet -->
+        <link rel="stylesheet" type="text/css" href="findstock.css"/> 
+
+        <!-- Creat Back Button -->
+        <a href="http://Google.com">
+            <button class="button">Back</button>
+        </a>
+
+        <!-- Add a break to give some space between button and search bar -->
+        <br><br>
+
+        <!-- Create Search Bar Form -->
+        <form action="/find-stock" id="find-stock-form" method="post" enctype="multipart/form-data" class="find-stock-form">
+
+            <!-- Create input for Search bar with placeholder text prompting User to enter the company stock info they would like to see -->
+            <input id="find-stock-form-search" type="text" name="stock" placeholder="Enter name of company stock to search..." class="search-bar">
+
+        </form>
+              
+    </head>
+
+</html>
