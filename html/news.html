@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <script type = "text/javascript" src = "news-scripts.js" ></script>
+
+ <title>News</title>
+</head>
+
+<style>
+div#menubar {
+
+width:100%; 
+/* margin:auto;  */
+border:15px groove #CCCC99; 
+background-color:blue; 
+text-align:center;
+float: left;
+margin-right: 10px;
+}
+
+#news-table{
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+
+}
+
+#no-news {
+    color: red
+}
+
+table, th, td {
+  border: 2px solid black;
+}
+div.na {
+color: red;
+}
+tr#head {
+color: blue;
+}
+</style>
+
+
+
+
+
+<!--       -->
+
+<body>
+
+<div id = "menubar">
+
+<button type="button" onclick="alert('Hello world!')">Home</button>
+<button type="button" onclick="alert('Hello world!')">Discover</button>
+<button type="button" onclick="alert('Hello world!')">News</button>
+<button type="button" onclick="alert('Hello world!')">Notifications</button>
+</div>
+<br />
+<br />
+<br />
+
+<table id = "news-table">
+  <tr id="head">
+    <th>Name</th>
+    <th>Ticker</th>
+    <th>Latest News</th>
+  </tr>
+  <tr>
+    <td>Nvidia</td>
+    <td>NVDA</td>
+    <td>
+        <a href="https://www.msn.com/en-us/money/topstocks/is-this-bad-news-for-nvidia/ar-AAUvsyn?ocid=uxbndlbing&pfr=1">is this bad news for nvidia</a>
+        <br />
+        <a href="https://www.foxbusiness.com/technology/nvidia-cybersecurity-incident">Nvidia nvidia cybersecurity incident</a>
+    </td>
+  </tr>
+  <tr>
+    <td>Apple</td>
+    <td>AAPL</td>
+    <td>
+        <a href="https://www.msn.com/EN-US/news/savingandinvesting/apple-stock-resilient-to-turbulence-in-2022/ar-AAUvsRC"> Apple stock resilient to turbulence in 2022</a>
+        <br />
+        <a href="https://www.wsj.com/articles/ukraine-war-leads-to-more-global-business-disruption-11646173915">Ukraine ukraine war leads to more global business disruption</a>
+        <br />
+        <a href="https://finance.yahoo.com/news/apple-aapl-stock-solid-choice-135801507.html"> Is Apple (AAPL) stock a solid choice?</a>
+    </td>
+  </tr>
+  <tr>
+    <td>Disney</td>
+    <td>DIS</td>
+    <td>
+        <div id="no-news">
+            No new news for $DIS
+        </div>
+    </td>
+  </tr>
+</table>
+
+
+</body>
+</html>
