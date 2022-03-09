@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <title>442 title page</title>
+
+
+<style>
+div#topbar {
+
+width:100%; 
+margin:auto; 
+border:15px groove #CCCC99; 
+background-color:blue; 
+text-align:center;
+}
+
+#thistab{
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+
+}
+
+table, th, td {
+  border: 2px solid black;
+}
+div.na {
+color: red;
+}
+tr#joe {
+color: blue;
+}
+button#testing {
+color: red;
+}
+
+<!--  div. is for class div# is for id     -->
+</style>
+
+<script
+  src="https://code.jquery.com/jquery-migrate-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous">
+ </script>
+
+<script>
+	$(document).ready(function() {
+		$("btn").click(function() {
+			$("#test").load("data.txt");
+		});
+	});
+
+
+</script>
+
+
+
+<!--       -->
+</head>
+<body>
+
+<div id = "topbar">
+
+<button type="button" button id = "testing" onclick="alert('Hello world!')">Home</button>
+<button type="button" onclick="alert('Hello world!')">Select Stocks</button>
+<button type="button" onclick="alert('Hello world!')">Follow</button>
+<button type="button" onclick="alert('Hello world!')">Testing</button>
+
+</div>
+
+<table id = "thistab">
+  <tr id = "joe">
+	<div class = "na">
+    <th>Stock Name</th>
+    <th>Stock Price</th>
+    <th>Loss / Gain</th>
+	</div>
+  </tr>
+  <tr>
+    <td>Nvidia</td>
+    <td>304564560</td>
+    <td>2000%</td>
+  </tr>
+  <tr>
+    <td>Apple</td>
+    <td>504564560</td>
+    <td>30000%</td>
+  </tr>
+  <tr>
+    <td>Google</td>
+    <td>704560</td>
+    <td>50000%</td>
+  </tr>
+</table>
+
+<div class = "na">
+jiawei
+</div>
+
+<div id="test">
+  <h2>Let AJAX change this text</h2>
+ 
+</div>
+
+<button id = "btn">Click</button>
+
+<!--               --->
+
+		
+		
+</body>
+</html>

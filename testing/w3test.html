@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <title>442 title page</title>
+
+
+<style>
+div#topbar {
+
+width:100%; 
+margin:auto; 
+border:15px groove #CCCC99; 
+background-color:blue; 
+text-align:center;
+}
+
+#thistab{
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+
+}
+
+table, th, td {
+  border: 2px solid black;
+}
+div.na {
+color: red;
+}
+tr#joe {
+color: blue;
+}
+button#testing {
+color: red;
+}
+
+<!--  div. is for class div# is for id     -->
+</style>
+
+<script
+  src="https://code.jquery.com/jquery-migrate-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous">
+ </script>
+
+<script>
+function loadDoc() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+     document.getElementById("demo").innerHTML = this.responseText;
+    }
+  };
+  xhttp.open("GET", "555.html", true);
+  xhttp.send();
+}
+
+</script>
+
+
+
+<!--       -->
+</head>
+<body>
+
+<div id = "topbar">
+
+<button type="button" button id = "testing" onclick="alert('Hello world!')">Home</button>
+<button type="button" onclick="alert('Hello world!')">Select Stocks</button>
+<button type="button" onclick="alert('Hello world!')">Follow</button>
+<button type="button" onclick="alert('Hello world!')">Testing</button>
+
+</div>
+
+<table id = "thistab">
+  <tr id = "joe">
+	<div class = "na">
+    <th>Stock Name</th>
+    <th>Stock Price</th>
+    <th>Loss / Gain</th>
+	</div>
+  </tr>
+  <tr>
+    <td>Nvidia</td>
+    <td>300</td>
+    <td>0%</td>
+  </tr>
+  <tr>
+    <td>Apple</td>
+    <td>500</td>
+    <td>0%</td>
+  </tr>
+  <tr>
+    <td>Google</td>
+    <td>700</td>
+    <td>0%</td>
+  </tr>
+</table>
+
+<div class = "na">
+jiawei
+</div>
+
+<div id="demo">
+  <h2>Let AJAX change this text</h2>
+  <button type="button" onclick="loadDoc()">Change Content</button>
+</div>
+
+<!--               --->
+
+		
+		
+</body>
+</html>
