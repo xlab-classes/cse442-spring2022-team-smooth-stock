@@ -1,0 +1,19 @@
+{
+  "dependencies": {
+    "discord.js": "^12.5.3",
+    "dotenv": "^16.0.0",
+    "node-mandrill": "^1.0.1",
+    "nodemailer": "^6.7.2",
+    "requirejs": "^2.3.6"
+  },
+  "name": "discordbot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

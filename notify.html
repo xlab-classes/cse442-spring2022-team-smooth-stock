@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="author" content="David Tan">
+		<meta name="keywords" content="HTML, CSS">
+		<link rel="stylesheet" href="style.css">
+		<title>Homepage</title>
+
+	</head>
+	<body>
+		<script type="module" src = "/script.js"></script>
+
+		<script type="text/javascript" src="index.js"></script>
+
+		<div class="ui">
+			
+			<div class="info">
+				<button class="back" >Back</button>
+				<div class="tba">User info</div>
+			</div>
+			
+			<div class="setting">
+				<div> 
+					
+					  <input type="text" id="textbox" class="textbox" placeholder='Enter Email'>
+					  <button onclick="send_to();"> Set Email </button>
+					
+				</div>
+				
+				<div class="dis_div"> 
+					
+					<div class="dis"> <a href="https://discord.com/invite/fZfDuYUVh4" target="_blank"> Change Discord</a></div>
+				</div>
+				
+				<div> 
+					<button class="but1">Notify when price change 5%</button>
+					<button class="but2">Notify when price change 10%</button> 
+				</div>
+				
+				<div> 
+					<form action="/action_page.php">
+					  <input type="text" id="fname" name="fname" placeholder='Enter amount'>
+					  <input id = "submit" type="submit" value="Notify">
+					</form>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
