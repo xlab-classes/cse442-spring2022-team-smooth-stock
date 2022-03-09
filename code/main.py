@@ -21,12 +21,30 @@ class Account(UserMixin, database.Model):
     salt = database.Column(database.String(100))
 
 
-@app.route('/')
-def home():
-    return render_template("LandingPage.html")
+@app.route('/',methods =["GET", "POST"])
 def login():
-    return render_template("LandingPage.html")
+    if request.method == "GET":
+        return render_template("LandingPage.html")
+    elif request.method == "POST" :
+        username = request.form.get("username")
+        password = request.form.get("password")
 
+        errorlist = ""
+
+        user = Account.query.filter_by(username=username).first()
+
+        if not user:
+            errorlist   += "User not found.\n"
+            return errorlist
+        else:
+            salt            = user.salt
+            hashed_password = bcrypt.hashpw(password.encode(), salt)
+            realpassword    = user.password
+
+            if realpassword == hashed_password:
+                return "User logged in!"
+            else:
+                return "Wrong password."
 
 @app.route('/create_account',methods =["GET", "POST"])
 def create_account():
@@ -36,7 +54,6 @@ def create_account():
         username    = request.form.get("username")
         password    = request.form.get("password")
         email       = request.form.get("email")
-
 
         errorlist = ""
         if len(username) < 4:
@@ -59,9 +76,14 @@ def create_account():
             return errorlist
 
         salt = bcrypt.gensalt()
-        hashed_password = bcrypt.hash(password,salt)
+        hashed_password = bcrypt.hashpw(password.encode(),salt)
 
         new_account = Account(username=username,email=email,password= hashed_password, salt =salt)
+
+        database.session.add(new_account)
+        database.session.commit()
+
+        return ("Account created!")
 
 
 #
