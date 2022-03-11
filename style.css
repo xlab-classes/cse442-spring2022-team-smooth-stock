@@ -41,25 +41,13 @@ button.but2{
 	box-shadow: 2px 2px;
 	
 }
-
-
-a{
-	text-decoration: none;
-	color:white;
-	
-
-}
-div.dis{
-	color:white;
-	width:70%;
+button.dis{
+	width:80%;
 	height:50px;
 	margin-bottom:50px;
 	margin-top:50px;
-	margin-left:75px;
 	border-radius: 25px;
 	box-shadow: 2px 2px;
-	border: 3px solid white;
-
 }
 button.back{
 	left:0;

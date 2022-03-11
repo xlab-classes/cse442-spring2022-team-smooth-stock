@@ -1,1 +1,0 @@
-import { createTransport } from 'nodemailer';
