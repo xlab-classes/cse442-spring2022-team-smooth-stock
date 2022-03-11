@@ -1,0 +1,8 @@
+div#topbar {
+
+  width:100%; 
+  margin:auto; 
+  border:15px groove #CCCC99; 
+  background-color:blue; 
+  text-align:center;
+}
