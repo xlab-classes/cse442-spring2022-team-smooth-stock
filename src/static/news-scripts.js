@@ -5,5 +5,4 @@ $(document).ready(function() {
     var newText = document.createTextNode('Meta');
     newCell.append(newText);
     let tickerCell = metaRow.insertCell().append(document.createTextNode('META'));
-
 })
