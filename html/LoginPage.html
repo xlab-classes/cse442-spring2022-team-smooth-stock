@@ -22,17 +22,26 @@ a href{
 </head>
 <body>
 
+<div class="box">
+{% if error %}
+    <p class=error>{{ error }}
+  {% endif %}
+
+ </div>
 <h1>Smooth Stocks</h1>
 
-<form action="/action_page.php">
+<form action="/" method="POST">
   <label for="username">Username:</label><br>
   <input type="text" id="username" name="username"><br>
   <label for="password">Password:</label><br>
   <input type="text" id="password" name="password"><br>
+    <input type="checkbox" id="Remember me" name="Remember me">
+    <label for="Remember me">Keep me logged in</label><br>
   <input type="submit" value="Login">
 </form>
 
-<a href="localhost:8800/createaccount">Create account</a>
+
+<a href="/create_account">Create account</a>
 
 
 </body>

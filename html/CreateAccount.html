@@ -21,14 +21,19 @@ a href{
 </style>
 </head>
 <body>
+{% if error %}
+    <p class=error>{{ error }}
+  {% endif %}
 
 <h1>Create Account</h1>
 
-<form action="/create_account.php">
+<form action="/create_account" method="POST">
   <label for="username">Username:</label><br>
   <input type="text" id="username" name="username"><br>
   <label for="password">Password:</label><br>
   <input type="text" id="password" name="password"><br>
+  <label for="email">Email:</label><br>
+  <input type="text" id="email" name="email"><br>
   <input type="submit" value="Create">
 </form>
 
@@ -37,6 +42,7 @@ a href{
 At least 8 characters long<br>
 At least 1 number<br>
 At least 1 capital letter<br>
+  At least 1 lowercase letter<br>
 </h3>
 
 
