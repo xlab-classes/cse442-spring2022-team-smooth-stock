@@ -52,6 +52,14 @@ def return_notify_page():
 def return_discover_page():
    return render_template('discover.html')
 
+@app.route('/442')
+def return_442_page():
+   return render_template('442.html')
+
+@app.route('/CreateAccount')
+def return_CA_page():
+   return render_template('CreateAccount.html')
+
 
 @app.route('/test_login')
 @login_required
