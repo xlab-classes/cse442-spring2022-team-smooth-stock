@@ -1,0 +1,54 @@
+<!-- This file contains the basic HTML for the Discover/Find Stock Page -->
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Add Title to Tab -->
+        <title>Smooth Stock: Find Stock</title>
+
+        <!-- Link Page to CSS style sheet -->
+        <link rel="stylesheet" type="text/css" href="findstock.css"/> 
+
+        <!-- Add common topbar to Discover/Find Stocks page -->
+        <div id = "topbar">
+
+            <button type="button" onclick="alert('Hello world!')">Home</button>
+            <button type="button" onclick="alert('Hello world!')">Select Stocks</button>
+            <button type="button" onclick="alert('Hello world!')">Follow</button>
+            <button type="button" onclick="alert('Hello world!')">Testing</button>
+
+         </div>
+
+        <!-- Create Back Button 
+        <a href="http://Google.com">
+            <button class="button">Back</button>
+        </a>
+        -->
+
+        <!-- Add a break to give some space between button and search bar -->
+        <br><br>
+        
+        <!-- Create Search Bar Form -->
+        <form action="/find-stock" id="find-stock-form" method="post" enctype="multipart/form-data" class="find-stock-form">
+
+            <!-- Create input for Search bar with placeholder text prompting User to enter the company stock info they would like to see -->
+            <input id="find-stock-form-search" type="text" name="stock" placeholder="Apple" class="search-bar">
+
+        </form>
+
+        <!-- Create flexbox -->
+        <div class="flex-container">
+
+            <!-- Replace this line of the template to display searched stocks Price history-->
+            <div class="price-history">Price History<br>52-Week Range: 118.86 - 182.94<br>50 Day average: 168.6374<br> 200 Day Average: 153.6086<br> EPS Current Year: 6.16<br> Price EPS Current Year: 24.451298<br> Average Analyst Rating: 1.8 - Buy</div>
+
+            <!-- Replace this line of the template to display searched stocks Current Price -->
+            <div class="stock-name">AAPL<br>Apple<br>150.62<br>-2.6562405<br><button class="button">Follow Stock</button></div>
+
+            <!-- Replace this line of the template to display news articles relevant to search stock -->
+            <div class="related-news">Related News Articles<br>Article 1<br>Article 2<br>Article 3</div>
+
+        </div>
+              
+    </head>
+
+</html>
