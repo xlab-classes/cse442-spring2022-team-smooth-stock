@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 from flask_login import LoginManager, UserMixin, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
+from mysql.connector import connect, Error
 import os
 
 
@@ -65,6 +66,26 @@ def return_CA_page():
 @login_required
 def test_login():
    return ("You are logged in!")
+
+@app.route('/db_test')
+def try_db_connect():
+   databases = ""
+   try:
+    with connect(
+        host="oceanus.cse.buffalo.edu",
+        user="jakeheid",
+        password="50271130",
+    ) as connection:
+        db_query = "SHOW DATABASES;"
+        with connection.cursor() as cursor:
+            cursor.execute(db_query)
+            for db in cursor:
+               print(db)
+               
+
+   except Error as e:
+      print(e)
+   return "view terminal to view databases"
 
 @login_manager.user_loader
 def user_loader(user_id):
