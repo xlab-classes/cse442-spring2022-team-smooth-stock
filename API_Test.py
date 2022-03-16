@@ -38,7 +38,7 @@ file_data = file.read()
 file.close()
 
 # Replace search bar text with the company User searched
-file_data = file_data.replace("Enter name of company stock to search...", "Apple")
+file_data = file_data.replace("Enter name of company stock to search...", dict.get('quoteResponse').get('result')[0].get('displayName'))
 
 # Replace Stock Name with actual name of stock User searched
 file_data = file_data.replace("Stock Name", dict.get('quoteResponse').get('result')[0].get('symbol'))
