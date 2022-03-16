@@ -2,6 +2,28 @@ const { createTransport } = require('nodemailer');
 const { Client, Intents } = require('discord.js');
 const { token } = require('./config.json');
 
+user_one = {
+  'email':'tandavid2000@gmail.com',
+  'discord':'abanana',
+  'follow_stocks':'meta'
+}
+
+user_two = {
+  'email':'dtan2@buffalo.edu',
+  'discord':'UnderSoul',
+  'follow_stocks':'AMC'
+}
+
+arr_users = [user_one, user_two]
+
+arr_test = ['meta', 'AMC']
+
+stocks_db_local = {
+  'meta':185,
+  'appl':150,
+  'AMC':15,
+  'GME':88
+}
 
 const intents = ["GUILDS", "GUILD_MEMBERS", "GUILD_MESSAGES"];
 
@@ -24,6 +46,11 @@ bot.on('guildMemberAdd', (member) => {
   
 });
 
+bot.on("price_change", (stock, member) => {
+
+  bot.channels.cache.get("404773877042905100").send('@'+member+" The stock "+stock+" price has change more than 5% today")
+
+});
 
 
 // Login to Discord with your client's token
@@ -42,13 +69,13 @@ var sender = createTransport({
 
 
 
-function send(email){
+function send(email, message){
 
     var mailOptions = {
         from: 'smoothstocks1@gmail.com',
         to: email,
         subject: 'Welcome Email',
-        text: 'Hello '+email.split('@')[0] +'!'
+        text: message
     };
       
     sender.sendMail(mailOptions, function(error, info){
@@ -61,10 +88,10 @@ function send(email){
 }
 
 
-function send_to(email){
+function send_to(email, message){
   
   //var sender_email = document.getElementById("textbox")
-  send(email)
+  send(email, message)
   //s = sender_email.value.split('@')
  // if (s.length == 2){
   //  send(sender_email.value)
@@ -73,7 +100,6 @@ function send_to(email){
 }
 
 
-send_to("tandavid2000@gmail.com")
 
 function confirm(){
 				
@@ -92,3 +118,38 @@ function confirm(){
     }));
 }
 
+const delay = ms => new Promise(res => setTimeout(res, ms));
+
+
+function simulate(){
+  setTimeout(function (){
+    ran = Math.random()
+    change = Math.floor(Math.random() * Math.floor(Math.random() * 10))
+    r_idx = Math.floor(Math.random() * arr_test.length)
+
+    if(ran > 0.5){
+      stocks_db_local[arr_test[r_idx]] += change
+    }else{
+      stocks_db_local[arr_test[r_idx]] -= change
+    }
+
+
+    console.log(arr_test[r_idx]+" "+stocks_db_local[arr_test[r_idx]].toString())
+    if (parseFloat(change)/parseFloat(stocks_db_local[arr_test[r_idx]]) >= 0.05){
+      for(var i=0; i<arr_users.length; i++){
+        if (arr_users[i]['follow_stocks'] == arr_test[r_idx]){
+          send_to(arr_users[i]["email"], "price change greater than 5%")
+          bot.emit("price_change", arr_test[r_idx], arr_users[i]["discord"])
+
+        }
+      }
+    }
+
+    simulate()
+  }, 5000)}
+
+
+
+
+
+simulate()
