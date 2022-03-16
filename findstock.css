@@ -15,7 +15,7 @@
 .button {
     background-color: lightgrey;
     color: black;
-    width: 5%;
+
 }
 
 /* Override placeholder for Chrome, Firefox, Opera, Safai 10.1+ */
@@ -39,6 +39,7 @@ body {
     background-color: gray;
 }
 
+/* Style for top bar*/
 div#topbar {
 
   width:100%; 
@@ -47,3 +48,39 @@ div#topbar {
   background-color:blue; 
   text-align:center;
   }
+
+/* Update flex-box style */
+.flex-container {
+    display: flex;
+    height: 500px;
+    align-items: center;
+    background-color: grey;
+    justify-content: space-around;
+}
+
+/* Update Price History div style */
+.price-history {
+    background-color: white;
+    border-radius: 10px;
+    border-width: 5px;
+    border-color: white;
+    padding: 5%;
+}
+
+/* Update stock-name div style */
+.stock-name {
+    background-color: white;
+    border-radius: 10px;
+    border-width: 5px;
+    border-color: white;
+    padding: 5%;
+}
+
+/* Update related-news div style */
+.related-news {
+    background-color: white;
+    border-radius: 10px;
+    border-width: 5px;
+    border-color: white;
+    padding: 5%;
+}
