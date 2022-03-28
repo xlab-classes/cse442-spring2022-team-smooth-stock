@@ -3,6 +3,8 @@ from flask_login import LoginManager, UserMixin, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
 from mysql.connector import connect, Error
 import os
+import requests
+import json
 
 
 
@@ -52,6 +54,83 @@ def return_notify_page():
 @app.route('/discover')
 def return_discover_page():
    return render_template('discover.html')
+
+@app.route('/find-stock', methods=["POST"])
+def return_discover_template_page():
+
+   # Trying to remove updated_discover_template file if it exists
+   if os.path.exists('../html/updated_discover_template.html'):
+      print("Path exists. Removing file...")
+      os.remove('../html/updated_discover_template.html')
+   else:
+      print("Path does not exist")
+
+   # Get the company sybmol user is looking for
+   company_symbol = request.form.get('stock')
+   print(company_symbol)
+
+   # Create url for Yahoo Finace API
+   url = "https://yfapi.net/v6/finance/quote"
+
+   # Create querystring to find company stock info
+   querystring = {"symbols":company_symbol}
+   
+   # Create headers dictionary with API Key
+   headers = {
+      'x-api-key': "REiSqBThOa9z6bIgDGJ2l4S92jMKXl8O1yRsROBK"
+   }
+
+   # Send request to Yahoo Finance API and store response
+   response = requests.request("GET", url, headers=headers, params=querystring)
+
+   # Load response as a dictionary
+   dict = json.loads(response.text)
+
+   # Read in find_stock.html
+   file = open('../html/discover_template.html')
+   file_data = file.read()
+
+   # Close discover_template.html as we only need to manipulate discover_template.html now
+   file.close()
+
+   # Replace search bar text with the company User searched
+   file_data = file_data.replace("Enter name of company stock to search...", dict.get('quoteResponse').get('result')[0].get('displayName'))
+
+   # Replace Stock Name with actual name of stock User searched
+   file_data = file_data.replace("Stock Name", dict.get('quoteResponse').get('result')[0].get('symbol'))
+
+   # Replace Company with actual name of company User searched
+   file_data = file_data.replace("Company", dict.get('quoteResponse').get('result')[0].get('displayName'))
+
+   # Replace Current Stock Price with actual value
+   file_data = file_data.replace("Current Stock Price", str(dict.get('quoteResponse').get('result')[0].get('regularMarketPrice')))
+
+   # Replace Current plus/minus with actual value
+   file_data = file_data.replace("Current plus/minus", str(dict.get('quoteResponse').get('result')[0].get('regularMarketChangePercent')))
+
+   # Replace 'Stock History (as a visual)' with:
+   # 1. 52-Week Range
+   # 2. 50 day average
+   # 3. 200 day average
+   # 4. epsCurrentYear
+   # 5. priceEpsCurrentYear
+   # 6. averageAnalystRating
+   new_string = ""
+   new_string += "52-Week Range: " + dict.get('quoteResponse').get('result')[0].get('fiftyTwoWeekRange') + "<br>"
+   new_string += "50 Day average: " + str(dict.get('quoteResponse').get('result')[0].get('fiftyDayAverage')) + "<br>"
+   new_string += " 200 Day Average: " + str(dict.get('quoteResponse').get('result')[0].get('twoHundredDayAverage')) + "<br>"
+   new_string += " EPS Current Year: " + str(dict.get('quoteResponse').get('result')[0].get('epsCurrentYear')) + "<br>"
+   new_string += " Price EPS Current Year: " + str(dict.get('quoteResponse').get('result')[0].get('priceEpsCurrentYear')) + "<br>"
+   new_string += " Average Analyst Rating: " + dict.get('quoteResponse').get('result')[0].get('averageAnalystRating') 
+   file_data = file_data.replace("Stock History (as a visual)", new_string)
+
+   # Write file data to output file
+   output_file = open("../html/updated_discover_template.html", "w")
+   output_file.write(file_data)
+   output_file.close()
+
+   # Return html page to be rendered
+   return render_template('updated_discover_template.html')
 
 @app.route('/442')
 def return_442_page():
