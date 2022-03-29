@@ -76,10 +76,6 @@ def return_discover_template_page():
    14. Article_3
    """
 
-
-   # Example of rendering discover_template.html with Price_History variable set to APPLE HISTORY
-   #return render_template('discover_template.html', Price_History = " APPLE HISTORY")
-
    # Get the company sybmol user is looking for
    company_symbol = request.form.get('stock')
    print(company_symbol)
