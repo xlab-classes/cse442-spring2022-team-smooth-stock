@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, redirect, render_template, request
 from flask_login import LoginManager, UserMixin, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
 from mysql.connector import connect, Error
@@ -58,12 +58,27 @@ def return_discover_page():
 @app.route('/find-stock', methods=["POST"])
 def return_discover_template_page():
 
-   # Trying to remove updated_discover_template file if it exists
-   if os.path.exists('../html/updated_discover_template.html'):
-      print("Path exists. Removing file...")
-      os.remove('../html/updated_discover_template.html')
-   else:
-      print("Path does not exist")
+   """
+   Variables to be obtained from Yahoo Finance API to be displayed on web page:
+   1. Price History
+   2. Fifty_Two_Week_Range
+   3. Fifty_Day_Average
+   4. Two_Hundred_Day_Average
+   5. EPS_Current_Year
+   6. Price_EPS_Current_Year
+   7. Average_Analyst_Rating
+   8. Stock_Name -> Symbol of the stock being searched
+   9. Company
+   10. Current_Stock_Price
+   11. Current_plus_minus
+   12. Article_1
+   13. Article_2
+   14. Article_3
+   """
+
+
+   # Example of rendering discover_template.html with Price_History variable set to APPLE HISTORY
+   #return render_template('discover_template.html', Price_History = " APPLE HISTORY")
 
    # Get the company sybmol user is looking for
    company_symbol = request.form.get('stock')
@@ -86,51 +101,21 @@ def return_discover_template_page():
    # Load response as a dictionary
    dict = json.loads(response.text)
 
-   # Read in find_stock.html
-   file = open('../html/discover_template.html')
-   file_data = file.read()
-
-   # Close discover_template.html as we only need to manipulate discover_template.html now
-   file.close()
-
-   # Replace search bar text with the company User searched
-   file_data = file_data.replace("Enter name of company stock to search...", dict.get('quoteResponse').get('result')[0].get('displayName'))
-
-   # Replace Stock Name with actual name of stock User searched
-   file_data = file_data.replace("Stock Name", dict.get('quoteResponse').get('result')[0].get('symbol'))
-
-   # Replace Company with actual name of company User searched
-   file_data = file_data.replace("Company", dict.get('quoteResponse').get('result')[0].get('displayName'))
-
-   # Replace Current Stock Price with actual value
-   file_data = file_data.replace("Current Stock Price", str(dict.get('quoteResponse').get('result')[0].get('regularMarketPrice')))
-
-   # Replace Current plus/minus with actual value
-   file_data = file_data.replace("Current plus/minus", str(dict.get('quoteResponse').get('result')[0].get('regularMarketChangePercent')))
-
-   # Replace 'Stock History (as a visual)' with:
-   # 1. 52-Week Range
-   # 2. 50 day average
-   # 3. 200 day average
-   # 4. epsCurrentYear
-   # 5. priceEpsCurrentYear
-   # 6. averageAnalystRating
-   new_string = ""
-   new_string += "52-Week Range: " + dict.get('quoteResponse').get('result')[0].get('fiftyTwoWeekRange') + "<br>"
-   new_string += "50 Day average: " + str(dict.get('quoteResponse').get('result')[0].get('fiftyDayAverage')) + "<br>"
-   new_string += " 200 Day Average: " + str(dict.get('quoteResponse').get('result')[0].get('twoHundredDayAverage')) + "<br>"
-   new_string += " EPS Current Year: " + str(dict.get('quoteResponse').get('result')[0].get('epsCurrentYear')) + "<br>"
-   new_string += " Price EPS Current Year: " + str(dict.get('quoteResponse').get('result')[0].get('priceEpsCurrentYear')) + "<br>"
-   new_string += " Average Analyst Rating: " + dict.get('quoteResponse').get('result')[0].get('averageAnalystRating') 
-   file_data = file_data.replace("Stock History (as a visual)", new_string)
-
-   # Write file data to output file
-   output_file = open("../html/updated_discover_template.html", "w")
-   output_file.write(file_data)
-   output_file.close()
+   # Initialize variables stated at beginning of function 
+   stock_symbol = dict.get('quoteResponse').get('result')[0].get('symbol')
+   company = dict.get('quoteResponse').get('result')[0].get('displayName')
+   current_stock_price = str(dict.get('quoteResponse').get('result')[0].get('regularMarketPrice'))
+   current_plus_minus = str(dict.get('quoteResponse').get('result')[0].get('regularMarketChangePercent'))
+   price_history = company + "'s Price History"
+   fifty_two_week_range = "52-Week Range: " + dict.get('quoteResponse').get('result')[0].get('fiftyTwoWeekRange')
+   fifty_day_average = "50 Day average: " + str(dict.get('quoteResponse').get('result')[0].get('fiftyDayAverage'))
+   two_hundred_day_average = " 200 Day Average: " + str(dict.get('quoteResponse').get('result')[0].get('twoHundredDayAverage'))
+   eps_current_year = " EPS Current Year: " + str(dict.get('quoteResponse').get('result')[0].get('epsCurrentYear'))
+   price_eps_current_year = " Price EPS Current Year: " + str(dict.get('quoteResponse').get('result')[0].get('priceEpsCurrentYear'))
+   average_analyst_rating = " Average Analyst Rating: " + dict.get('quoteResponse').get('result')[0].get('averageAnalystRating')
 
    # Return html page to be rendered
-   return render_template('updated_discover_template.html')
+   return render_template('discover_template.html', Stock_Name=stock_symbol, Company=company, Current_Stock_Price=current_stock_price, Current_plus_minus=current_plus_minus, Price_History=price_history, Fifty_Two_Week_Range=fifty_two_week_range, Fifty_Day_Average=fifty_day_average, Two_Hundred_Day_Average=two_hundred_day_average, EPS_Current_Year=eps_current_year, Price_EPS_Current_Year=price_eps_current_year, Average_Analyst_Rating=average_analyst_rating)
 
 @app.route('/442')
 def return_442_page():

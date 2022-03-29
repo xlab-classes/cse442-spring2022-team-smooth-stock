@@ -25,7 +25,7 @@
         <form action="/find-stock" id="find-stock-form" method="post" enctype="multipart/form-data" class="find-stock-form">
 
             <!-- Create input for Search bar with placeholder text prompting User to enter the company stock info they would like to see -->
-            <input id="find-stock-form-search" type="text" name="stock" placeholder="Tesla" class="search-bar">
+            <input id="find-stock-form-search" type="text" name="stock" placeholder="Enter symbol of company to search for..." class="search-bar">
 
         </form>
 
@@ -33,13 +33,13 @@
         <div class="flex-container">
 
             <!-- Replace this line of the template to display searched stocks Price history-->
-            <div class="price-history">Price History<br>52-Week Range: 546.98 - 1243.49<br>50 Day average: 896.2404<br> 200 Day Average: 860.64307<br> EPS Current Year: 10.61<br> Price EPS Current Year: 102.90669<br> Average Analyst Rating: 2.5 - Buy</div>
+            <div class="price-history"> {{ Price_History }} <br> {{ Fifty_Two_Week_Range }} <br> {{ Fifty_Day_Average }} <br> {{ Two_Hundred_Day_Average }} <br> {{ EPS_Current_Year }} <br> {{ Price_EPS_Current_Year }} <br> {{ Average_Analyst_Rating }} </div>
 
             <!-- Replace this line of the template to display searched stocks Current Price -->
-            <div class="stock-name">TSLA<br>Tesla<br>1091.84<br>8.034508<br><button class="button">Follow Stock</button></div>
+            <div class="stock-name">{{ Stock_Name }} <br> {{ Apple }} <br> {{ Current_Stock_Price }} <br> {{ Current_plus_minus }} <br> <button class="button">Follow Stock</button></div>
 
             <!-- Replace this line of the template to display news articles relevant to search stock -->
-            <div class="related-news">Related News Articles<br>Article 1<br>Article 2<br>Article 3</div>
+            <div class="related-news">Related News Articles<br> {{ Article_1 }} <br> {{ Article_2 }} <br> {{ Article_3 }} </div>
 
         </div>
               
@@ -50,7 +50,7 @@
 <style>
     /* Update search-bar to be a larger input text field */
 .search-bar{
-    background-color: rgb(160, 45, 45);
+    background-color: lightgray;
     color: black;
     width: 90%;
     height: 100%;
