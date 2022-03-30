@@ -71,9 +71,6 @@ def return_discover_template_page():
    9. Company
    10. Current_Stock_Price
    11. Current_plus_minus
-   12. Article_1
-   13. Article_2
-   14. Article_3
    """
 
    # Get the company sybmol user is looking for
