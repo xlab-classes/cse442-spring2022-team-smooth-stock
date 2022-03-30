@@ -1,5 +1,5 @@
-from flask import Flask, redirect, render_template, request
-from flask_login import LoginManager, UserMixin, login_required, current_user
+from flask import Flask, render_template, request
+from flask_login import LoginManager, UserMixin, login_required, current_user, login_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
 from mysql.connector import connect, Error
 import os
@@ -18,7 +18,7 @@ app.config['SECRET_KEY']   = "tempkey123321"
 database.init_app(app)
 
 login_manager = LoginManager()
-login_manager.login_view = 'login'
+login_manager.login_view = 'login_needed'
 login_manager.init_app(app)
 
 import data_structures as DS
@@ -31,8 +31,12 @@ def login():
    elif request.method == "POST":
       return path_calls.login(request)
 
+@app.route('/login_needed')
+def login_needed():
+   return render_template('LoginPage.html', error = "Access denied, login required.")
 
 @app.route('/news')
+@login_required
 def return_news():
    return render_template('news.html')
 
@@ -54,6 +58,13 @@ def return_notify_page():
 @app.route('/discover')
 def return_discover_page():
    return render_template('discover.html')
+
+
+@app.route('/logout')
+@login_required
+def logout():
+   logout_user()
+   return render_template('LoginPage.html')
 
 @app.route('/find-stock', methods=["POST"])
 def return_discover_template_page():
@@ -113,10 +124,6 @@ def return_discover_template_page():
 @app.route('/442')
 def return_442_page():
    return render_template('442.html')
-
-@app.route('/CreateAccount')
-def return_CA_page():
-   return render_template('CreateAccount.html')
 
 
 @app.route('/test_login')
