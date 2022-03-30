@@ -25,9 +25,23 @@
         <form action="/find-stock" id="find-stock-form" method="post" enctype="multipart/form-data" class="find-stock-form">
 
             <!-- Create input for Search bar with placeholder text prompting User to enter the company stock info they would like to see -->
-            <input id="find-stock-form-search" type="text" name="stock" placeholder="Enter symbol of company stock to search..." class="search-bar">
+            <input id="find-stock-form-search" type="text" name="stock" placeholder="Enter symbol of company to search for..." class="search-bar">
 
         </form>
+
+        <!-- Create flexbox -->
+        <div class="flex-container">
+
+            <!-- Replace this line of the template to display searched stocks Price history-->
+            <div class="price-history"> {{ Price_History }} <br> {{ Fifty_Two_Week_Range }} <br> {{ Fifty_Day_Average }} <br> {{ Two_Hundred_Day_Average }} <br> {{ EPS_Current_Year }} <br> {{ Price_EPS_Current_Year }} <br> {{ Average_Analyst_Rating }} </div>
+
+            <!-- Replace this line of the template to display searched stocks Current Price -->
+            <div class="stock-name">{{ Stock_Name }} <br> {{ Company }} <br> {{ Current_Stock_Price }} <br> {{ Current_plus_minus }} <br> <button class="button">Follow Stock</button></div>
+
+            <!-- Replace this line of the template to display news articles relevant to search stock -->
+            <div class="related-news">Related News Articles<br> {{ Article_1 }} <br> {{ Article_2 }} <br> {{ Article_3 }} </div>
+
+        </div>
               
     </head>
 
@@ -36,7 +50,7 @@
 <style>
     /* Update search-bar to be a larger input text field */
 .search-bar{
-    background-color: lightgrey;
+    background-color: lightgray;
     color: black;
     width: 90%;
     height: 100%;
