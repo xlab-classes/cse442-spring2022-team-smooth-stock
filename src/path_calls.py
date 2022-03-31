@@ -27,7 +27,7 @@ def login(request):
             login_user(user,remember=remember) #set cookies to show user is logged in
             return render_template('LoginPage.html', error = "You're logged in!")
         else :
-            return render_template('LoginPage.html', error = errorlist)
+            return render_template('LoginPage.html', error = "Wrong password")
 
 
 def create_account(request):

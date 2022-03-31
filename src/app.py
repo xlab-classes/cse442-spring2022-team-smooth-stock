@@ -52,10 +52,12 @@ def return_landing_page():
    return render_template('LandingPage.html')
 
 @app.route('/notify')
+@login_required
 def return_notify_page():
    return render_template('notify.html')
 
 @app.route('/discover')
+@login_required
 def return_discover_page():
    return render_template('discover.html')
 
@@ -67,6 +69,7 @@ def logout():
    return render_template('LoginPage.html')
 
 @app.route('/find-stock', methods=["POST"])
+@login_required
 def return_discover_template_page():
 
    """
