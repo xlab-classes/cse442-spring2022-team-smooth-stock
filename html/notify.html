@@ -9,20 +9,20 @@
 		
 	</head>
 	<body>
+		<script type="module" src = "/script.js"></script>
+
+		<script type="text/javascript" src="index.js"></script>
 		<div class="ui">
 			
 			<div class="info">
-				<button class="back" >Back</button>
+				<a class="back" href=""><button>Back</button></a>
 				<div class="tba">User info</div>
 			</div>
 			
 			<div class="setting">
 				<div> 
-					<form action="/action_page.php">
-					  
-					  <input type="text" id="fname" name="fname" placeholder='Enter email'>
-					  <input id = "submit" type="submit" value="Change email">
-					</form>
+					<input type="text" id="textbox" class="textbox" placeholder='Enter Email'>
+					<button onclick="send_to();"> Set Email </button>
 				</div>
 				
 				<div> 
@@ -35,10 +35,9 @@
 				</div>
 				
 				<div> 
-					<form action="/action_page.php">
-					  <input type="text" id="fname" name="fname" placeholder='Enter amount'>
-					  <input id = "submit" type="submit" value="Notify">
-					</form>
+					<input type="text" id="textbox_2" class="textbox_2" placeholder='Enter Email'>
+					<button onclick="change_notify();"> Set Email </button>	
+
 				</div>
 			</div>
 		</div>

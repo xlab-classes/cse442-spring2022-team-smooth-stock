@@ -99,7 +99,19 @@ function send_to(email, message){
   //alert(sender_email.value)
 }
 
+notify = 5
 
+function change_notify(){
+  
+  //var sender_email = document.getElementById("textbox")
+  notify = parseInt(document.getElementById("textbox").value)
+  
+  //s = sender_email.value.split('@')
+ // if (s.length == 2){
+  //  send(sender_email.value)
+  //}
+  //alert(sender_email.value)
+}
 
 function confirm(){
 				
@@ -135,7 +147,7 @@ function simulate(){
 
 
     console.log(arr_test[r_idx]+" "+stocks_db_local[arr_test[r_idx]].toString())
-    if (parseFloat(change)/parseFloat(stocks_db_local[arr_test[r_idx]]) >= 0.05){
+    if (parseFloat(change)/parseFloat(stocks_db_local[arr_test[r_idx]]) >= (notify/100)){
       for(var i=0; i<arr_users.length; i++){
         if (arr_users[i]['follow_stocks'] == arr_test[r_idx]){
           send_to(arr_users[i]["email"], "price change greater than 5%")
