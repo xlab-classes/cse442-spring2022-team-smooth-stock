@@ -4,7 +4,6 @@
 		<meta charset="utf-8">
 		<meta name="author" content="David Tan">
 		<meta name="keywords" content="HTML, CSS">
-		<link rel="stylesheet" href="style.css">
 		<title>Homepage</title>
 		
 	</head>
@@ -15,18 +14,13 @@
 		<div class="ui">
 			
 			<div class="info">
-				<a class="back" href=""><button>Back</button></a>
+				<a href="442"><button>Landing Page</button></a>
 				<div class="tba">User info</div>
 			</div>
 			
 			<div class="setting">
-				<div> 
-					<input type="text" id="textbox" class="textbox" placeholder='Enter Email'>
-					<button onclick="send_to();"> Set Email </button>
-				</div>
-				
-				<div> 
-					<button class="dis">Change discord</button>
+				<div>
+					<a href="https://discord.com/invite/fZfDuYUVh4" target="_blank"><button>Change Discord</button></a>
 				</div>
 				
 				<div> 
@@ -43,3 +37,90 @@
 		</div>
 	</body>
 </html>
+
+<style>
+body{
+	background-color:gray;
+}
+div.ui{
+	position:relative;
+}
+
+div.info{
+	height: 200px;
+	width: 50%;
+	position:absolute;
+	left:0;
+	/*border: 3px solid #73AD21;*/
+
+}
+
+div.setting{
+	left:50%;
+	position:absolute;
+	/*border: 3px solid #73AD21;*/
+	text-align:center;
+	width: 50%;
+
+}
+
+button.but1{
+	margin-bottom:50px;
+	margin-top:50px;
+	width:40%;
+	height:150px;
+	border-radius: 25px;
+	box-shadow: 2px 2px;
+
+}
+button.but2{
+	width:40%;
+	height:150px;
+	margin-bottom:50px;
+	margin-top:50px;
+	border-radius: 25px;
+	box-shadow: 2px 2px;
+	
+}
+button.dis{
+	width:80%;
+	height:50px;
+	margin-bottom:50px;
+	margin-top:50px;
+	border-radius: 25px;
+	box-shadow: 2px 2px;
+}
+button.back{
+	left:0;
+	border-radius: 25px;
+
+}
+
+#fname{
+	width:70%;
+	height:25px;
+	margin-bottom:50px;
+	margin-top:50px;
+	border-radius: 25px;
+
+}
+
+#submit{
+	height:25px;
+	border-radius: 25px;
+	margin-bottom:50px;
+	margin-top:50px;
+}
+
+div.tba{
+	text-align:center;
+	/*border: 3px solid #73AD21;*/
+	margin-left:10%;
+	margin-top:5%;
+	width:75%;
+	height:250%;
+	background-color:white;
+	border-radius: 25px;
+
+}
+</style>
