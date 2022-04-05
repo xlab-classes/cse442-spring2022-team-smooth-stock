@@ -7,3 +7,4 @@ class Account(UserMixin, app.database.Model):
     email = app.database.Column(app.database.String(40), unique=True)
     password = app.database.Column(app.database.String(50))
     salt = app.database.Column(app.database.String(100))
+
