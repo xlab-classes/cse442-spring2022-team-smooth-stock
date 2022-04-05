@@ -1,3 +1,4 @@
+from curses import meta
 from flask import Flask, render_template, request
 from flask_login import LoginManager, UserMixin, login_required, current_user, login_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
@@ -67,6 +68,30 @@ def return_discover_page():
 def logout():
    logout_user()
    return render_template('LoginPage.html')
+
+@app.before_first_request
+def create_tables():
+    database.create_all()
+
+@app.route('/follow')
+@login_required
+def follow():
+
+   # Create a test to submit
+   user_id = 1
+   username = "fake_person"
+   followed_stocks = "AAPL, GOOG, TSLA"
+   entry = DS.Saved_Stocks(id = user_id, username = username, followed_stocks = followed_stocks)
+
+   database.session.add(entry)
+   database.session.commit()
+
+   # Print contents of saved_stocks table
+   print(database.Table('saved_stocks', database.metadata))
+
+   # Render initial discover page (for now)
+   return render_template('discover.html')
+   
 
 @app.route('/find-stock', methods=["POST"])
 @login_required
