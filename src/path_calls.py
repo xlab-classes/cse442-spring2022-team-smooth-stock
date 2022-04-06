@@ -4,6 +4,7 @@ import bcrypt
 from app import DS
 from app import database
 from app import mydb
+import json
 
 online_users = []
 
@@ -94,3 +95,21 @@ def create_account(request):
 
     errorlist = "Account created!"
     return render_template('CreateAccount.html', error = errorlist)
+
+def parse_xml():
+        with open("a.xml", "r") as file:
+                content = file.readlines()
+                content = "".join(content)
+                bs_content = BeautifulSoup(content, "lxml")
+                items = bs_content.find_all("item")
+                titles = []
+                links = []
+                dates = []
+
+                for i in items:
+                        title = i.find("title").text
+                        titles.append(title)
+                        link = i.contents[2]
+                        links.append(link)
+                d = list(zip(titles, links))
+        return json.dumps(d)
