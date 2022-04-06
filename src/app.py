@@ -6,6 +6,8 @@ import mysql.connector
 import os
 import requests
 import json
+import time
+
 
 
 t_dir = os.path.abspath('../html')
@@ -31,6 +33,35 @@ mydb = mysql.connector.connect(
 
 import data_structures as DS
 import path_calls
+def sanitize(str):
+    count = 0
+    a = str.replace(",", "")
+    idx = a.find(".")
+    for i in range(idx, len(a) - 1):
+        count += 1
+    if count < 2 :
+        store = a + "0"
+        return store
+    return a
+def obtain_price(ticker):
+    url = "https://yfapi.net/v6/finance/quote"
+    query_string_msg = ticker + ",EURUSD=X"
+    querystring = {"symbols": ""}
+    querystring["symbols"] = query_string_msg
+    headers = {
+        'x-api-key': "hlb79LxeLF55X2SoJI0wA3UJSrpuB5ML89Ap8lK7"
+    }
+    response = requests.request("GET", url, headers=headers, params=querystring)
+    response_as_bit_string = response.content
+    int = response_as_bit_string.find(b'ask')
+    build = b''
+    for i in range(int, int + 11):
+        build += response_as_bit_string[i:i + 1]
+
+    str_build = str(build)
+    price_str = str_build[7:len(str_build) - 1]
+    return price_str
+
 
 @app.route('/',methods =["GET", "POST"])
 def login():
@@ -182,8 +213,36 @@ def return_discover_template_page():
 
 @app.route('/442')
 def return_442_page():
+   time.sleep(3)
    return render_template('442.html')
 
+
+# hlb79LxeLF55X2SoJI0wA3UJSrpuB5ML89Ap8lK7
+@app.route('/support')
+def return_support_page():
+    table_head = "<tr id = 'joe'><div class = 'na'><th>Stock Name</th><th>Stock Price</th><th>Loss / Gain</th></div></tr>"
+    ###########------------------------------##################################
+    #retreive from a DB (auto build)
+    user_stock_list=["AAPL","NVDA","GOOG","GME"]
+    prices = []
+    for i in range(len(user_stock_list)):
+        cur = obtain_price(user_stock_list[i])
+        sanitized = sanitize(cur)
+        prices.insert(len(prices), sanitized)
+    for i in range(len(user_stock_list)):
+        s_name = user_stock_list[i]
+        s_price = prices[i]
+        txt1 = "<tr><td>{stock_name}</td><td>{stock_price}</td><td>{to_decide}</td></tr>".format(stock_name = s_name ,stock_price = s_price, to_decide = 1)
+        table_head += txt1
+    return render_template('support.html', generate_table=table_head)
+
+
+
+
+
+
+
+# test
 
 @app.route('/test_login')
 @login_required
