@@ -1,11 +1,11 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session
 from flask_login import LoginManager, UserMixin, login_required, current_user, login_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
 from mysql.connector import connect, Error
+import mysql.connector
 import os
 import requests
 import json
-
 
 
 t_dir = os.path.abspath('../html')
@@ -20,6 +20,14 @@ database.init_app(app)
 login_manager = LoginManager()
 login_manager.login_view = 'login_needed'
 login_manager.init_app(app)
+
+mydb = mysql.connector.connect(
+   host="oceanus.cse.buffalo.edu",
+   user="kptodd",
+   password="50318271",
+   database="cse442_2022_spring_team_q_db"
+)
+
 
 import data_structures as DS
 import path_calls
@@ -134,29 +142,68 @@ def return_442_page():
 def test_login():
    return ("You are logged in!")
 
+@app.route('/db_test3')
+def test_db3():
+   username = ["test1"]
+   mycursor = mydb.cursor()
+   sql = "SELECT * FROM userdata WHERE username = %s"
+   mycursor.execute(sql, username)
+   myresult = mycursor.fetchall()
+
+   if myresult:
+      print("Something",myresult[0][2])
+   else:
+      print("nothing!")
+
+   for x in myresult :
+      print(x)
+   return "view terminal to view databases"
+
+
+@app.route('/db_view_users')
+def try_db_connect2():
+   cursor = mydb.cursor()
+   cursor.execute("SELECT * FROM userdata")
+   myresult = cursor.fetchall()
+
+   for x in myresult :
+      print(x)
+   return "view terminal to view databases"
+
 @app.route('/db_test')
 def try_db_connect():
-   databases = ""
-   try:
-    with connect(
-        host="oceanus.cse.buffalo.edu",
-        user="jakeheid",
-        password="50271130",
-    ) as connection:
-        db_query = "SHOW DATABASES;"
-        with connection.cursor() as cursor:
-            cursor.execute(db_query)
-            for db in cursor:
-               print(db)
-               
+   cursor = mydb.cursor()
 
-   except Error as e:
-      print(e)
+   sql = "DROP TABLE userdata"
+
+   cursor.execute(sql)
+
+   cursor.execute(
+      "CREATE TABLE userdata (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(255), email VARCHAR(255),password VARCHAR(255),salt VARCHAR(255),is_active INT)")
+
+   sql = "INSERT INTO userdata (username, email,password,salt,is_active) VALUES (%s, %s, %s, %s, %s)"
+   val = ("test1", "email1", "pass1", "salt1", 0)
+   cursor.execute(sql, val)
+   mydb.commit()
+
+   cursor.execute("SELECT * FROM userdata")
+   myresult = cursor.fetchall()
+
+   for x in myresult :
+      print(x)
    return "view terminal to view databases"
 
 @login_manager.user_loader
 def user_loader(user_id):
-   return DS.Account.query.get(int(user_id))
+   print("TEST?")
+   print(path_calls.online_users)
+   value = int(user_id)
+   for x in path_calls.online_users :
+      if x.id == value:
+         print(x)
+         return x
+   print("not found")
+   return DS.User()
 
 if __name__ == '__main__':
    app.run()
