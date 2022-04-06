@@ -4,8 +4,8 @@ import bcrypt
 from app import DS
 from app import database
 from app import mydb
-import json
 from bs4 import BeautifulSoup
+import requests
 
 online_users = []
 
@@ -97,7 +97,13 @@ def create_account(request):
     errorlist = "Account created!"
     return render_template('CreateAccount.html', error = errorlist)
 
+def save_yahoo_xml(url):
+        response = requests.get(url)
+        with open("a.xml", 'wb') as f:
+                f.write(response.content)
+
 def parse_xml():
+        save_yahoo_xml("https://finance.yahoo.com/rss/")
         with open("a.xml", "r") as file:
                 content = file.readlines()
                 content = "".join(content)
@@ -105,7 +111,6 @@ def parse_xml():
                 items = bs_content.find_all("item")
                 titles = []
                 links = []
-                dates = []
 
                 for i in items:
                         title = i.find("title").text
@@ -113,4 +118,4 @@ def parse_xml():
                         link = i.contents[2]
                         links.append(link)
                 d = list(zip(titles, links))
-        return json.dumps(d)
+        return d

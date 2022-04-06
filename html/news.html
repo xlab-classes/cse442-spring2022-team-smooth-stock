@@ -6,7 +6,7 @@
   src="https://code.jquery.com/jquery-3.6.0.min.js"
   integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
   crossorigin="anonymous"></script>
-  <script src="../src/static/news-scripts.js"></script>
+  <!-- <script src="../src/static/news-scripts.js"></script> -->
   <script src="{{url_for('static', filename='news-scripts.js')}}"></script>
 
 
@@ -58,7 +58,6 @@ color: blue;
 <a href="notify"><button>Notifications</button></a>
 <a href="discover"><button>Discover</button></a>
     <a href="logout"><button>Logout</button></a>
-<a href="db_test"><button>Oceanus DB Test</button></a>
 </div>
 <br />
 <br />
@@ -67,39 +66,20 @@ color: blue;
 <table id = "news-table">
   <tr id="head">
     <th>Name</th>
-    <th>Ticker</th>
     <th>Latest News</th>
   </tr>
+  {% for each in title %}
   <tr>
-    <td>Nvidia</td>
-    <td>NVDA</td>
-    <td>
-        <a href="https://www.msn.com/en-us/money/topstocks/is-this-bad-news-for-nvidia/ar-AAUvsyn?ocid=uxbndlbing&pfr=1">is this bad news for nvidia</a>
-        <br />
-        <a href="https://www.foxbusiness.com/technology/nvidia-cybersecurity-incident">Nvidia nvidia cybersecurity incident</a>
-    </td>
+  <td>{{ each[0] }}
+  <td><a href={{ each[1] }} >{{each[1]}}</a>
   </tr>
-  <tr>
-    <td>Apple</td>
-    <td>AAPL</td>
-    <td>
-        <a href="https://www.msn.com/EN-US/news/savingandinvesting/apple-stock-resilient-to-turbulence-in-2022/ar-AAUvsRC"> Apple stock resilient to turbulence in 2022</a>
-        <br />
-        <a href="https://www.wsj.com/articles/ukraine-war-leads-to-more-global-business-disruption-11646173915">Ukraine ukraine war leads to more global business disruption</a>
-        <br />
-        <a href="https://finance.yahoo.com/news/apple-aapl-stock-solid-choice-135801507.html"> Is Apple (AAPL) stock a solid choice?</a>
-    </td>
-  </tr>
-  <tr>
-    <td>Disney</td>
-    <td>DIS</td>
-    <td>
-        <div id="no-news">
-            No new news for $DIS
-        </div>
-    </td>
-  </tr>
+  {% endfor %}
+  
 </table>
+
+<script>
+  console.log(title);
+</script>
 
 
 </body>
