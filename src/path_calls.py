@@ -5,6 +5,7 @@ from app import DS
 from app import database
 from app import mydb
 import json
+from bs4 import BeautifulSoup
 
 online_users = []
 
