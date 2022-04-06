@@ -8,6 +8,12 @@ class Account(UserMixin, app.database.Model):
     password = app.database.Column(app.database.String(50))
     salt = app.database.Column(app.database.String(100))
 
+
+class Saved_Stocks(app.database.Model):
+    id = app.database.Column(app.database.Integer, primary_key=True)
+    username = app.database.Column(app.database.String(40))
+    followed_stocks = app.database.Column(app.database.String(255))
+
 class User(UserMixin):
     is_authenticated = False
     is_active = False
@@ -15,3 +21,4 @@ class User(UserMixin):
     id = 0
     def get_id(self):
         return (self.id)
+
