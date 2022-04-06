@@ -75,9 +75,10 @@ def login_needed():
    return render_template('LoginPage.html', error = "Access denied, login required.")
 
 @app.route('/news')
-@login_required
+#@login_required
 def return_news():
-   return render_template('news.html')
+   xml = path_calls.parse_xml()
+   return render_template('news.html', title=xml)
 
 @app.route('/create_account',methods =["GET", "POST"])
 def create_account() :
@@ -279,6 +280,7 @@ def try_db_connect2():
 
 @app.route('/db_test')
 def try_db_connect():
+
    cursor = mydb.cursor()
 
    sql = "DROP TABLE userdata"
@@ -299,6 +301,11 @@ def try_db_connect():
    for x in myresult :
       print(x)
    return "view terminal to view databases"
+
+@app.route('/get_news')
+def get_news():
+   news = path_calls.parse_xml()
+   return news
 
 @login_manager.user_loader
 def user_loader(user_id):
