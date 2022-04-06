@@ -3,7 +3,7 @@
 <head>
  <meta charset="UTF-8">
  <title>442 title page</title>
-</head>
+
 
 <style>
 div#topbar {
@@ -31,25 +31,46 @@ color: red;
 tr#joe {
 color: blue;
 }
-
+button#testing {
+color: red;
+}
 
 <!--  div. is for class div# is for id     -->
 </style>
 
+<script
+  src="https://code.jquery.com/jquery-migrate-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous">
+ </script>
 
+<script>
+function loadDoc() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+     document.getElementById("thistab").innerHTML = this.responseText;
+    }
+  };
+  xhttp.open("GET", "support.html", true);
+  xhttp.send();
+}
+
+</script>
 
 
 
 <!--       -->
-
+</head>
 <body>
 
 <div id = "topbar">
 
-<button type="button" onclick="alert('Hello world!')">Home</button>
+<button type="button" button id = "testing" onclick="alert('Hello world!')">Home</button>
 <button type="button" onclick="alert('Hello world!')">Select Stocks</button>
 <button type="button" onclick="alert('Hello world!')">Follow</button>
 <button type="button" onclick="alert('Hello world!')">Testing</button>
+
 </div>
 
 <table id = "thistab">
@@ -78,9 +99,19 @@ color: blue;
 </table>
 
 <div class = "na">
-jiawei
+.
 </div>
 
+<div id="demo">
 
+
+
+    <a href="support"><button>support update</button></a>
+</div>
+
+<!--               --->
+
+		
+		
 </body>
 </html>
