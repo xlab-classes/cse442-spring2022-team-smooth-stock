@@ -3,6 +3,7 @@ from flask import Flask, render_template, request
 from flask_login import LoginManager, UserMixin, login_required, current_user, login_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
 from mysql.connector import connect, Error
+import mysql.connector
 import os
 import requests
 import json
@@ -74,27 +75,51 @@ def create_tables():
     database.create_all()
 
 @app.route('/follow')
-@login_required
+#@login_required
 def follow():
 
-   # Create a test to submit
-   user_id = 1
-   username = "fake_person"
-   followed_stocks = "AAPL, GOOG, TSLA"
-   entry = DS.Saved_Stocks(id = user_id, username = username, followed_stocks = followed_stocks)
+   # Connect to database
+   mydb = mysql.connector.connect(
+      host="oceanus.cse.buffalo.edu",
+      user="mdlaszlo",
+      password="50265202",
+      database="cse442_2022_spring_team_q_db"
+   )
 
-   database.session.add(entry)
-   database.session.commit()
+   # Create cursor
+   cursor = mydb.cursor()
 
-   # Print contents of saved_stocks table
-   print(database.Table('saved_stocks', database.metadata))
+   # Disable Foreign Key Checks (for now)
+   sql = "SET FOREIGN_KEY_CHECKS=0"
+   cursor.execute(sql)
+
+   # Create sql command
+   sql = "INSERT INTO saved_stocks (userID, username, stocks) VALUES (%s, %s, %s)"
+
+   # Create values
+   vals = ("-1", "fake_user_1", "APPL, MSFT, TSLA")
+
+   # Execute command
+   cursor.execute(sql, vals)
+   mydb.commit()
+
+   # Print saved_stocks information
+   cursor.execute("SELECT * FROM saved_stocks")
+   myresult = cursor.fetchall()
+
+   for x in myresult :
+      print(x)
+
+   # Re-enable Foreign Key Checks (for now)
+   sql = "SET FOREIGN_KEY_CHECKS=1"
+   cursor.execute(sql)
 
    # Render initial discover page (for now)
    return render_template('discover.html')
    
 
 @app.route('/find-stock', methods=["POST"])
-@login_required
+#@login_required
 def return_discover_template_page():
 
    """
