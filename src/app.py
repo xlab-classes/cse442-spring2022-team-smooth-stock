@@ -53,34 +53,59 @@ def return_landing_page():
    return render_template('LandingPage.html')
 
 
-@app.route('/notify', methods=['GET','POST'])
-@login_required
-def return_notify_page():
+def email(sender_to, message):
+   gmail_user = 'smoothstocks1@gmail.com'
+   gmail_password =  '!qazxsw23'
+   # email_text = """\
+   # From: %s
+   # To: %s
+   # Subject: %s
+
+   # %s
+   # """ % (gmail_user, ", ".join(to), "stocks", email_message)
+
+   try:
+      smtp_server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+      smtp_server.ehlo()
+      smtp_server.login(gmail_user, gmail_password)
+      smtp_server.sendmail(gmail_user, sender_to, message)
+      smtp_server.close()
+      print ("Email sent successfully!")
+   except Exception as ex:
+      print ("Something went wrong….",ex)
 
 
+
+def parse_information(name, newprice, plusminus):
    mydb = mysql.connector.connect(
          host="oceanus.cse.buffalo.edu",
          user="dtan2",
          password="50278774",
          database="cse442_2022_spring_team_q_db"
       )
-   
-
    cursor = mydb.cursor()
 
    cursor.execute("SELECT username, stocks FROM saved_stocks")
    myresult = cursor.fetchall()
 
    for x in myresult:
-      print(x)
-  
+      arr_stock = x[1].split(", ")
+      for stock in arr_stock:
+         if stock == name:
+            cursor.execute("SELECT email FROM userdata "
+            "WHERE username == "+x[0])
+            myresult = cursor.fetchall()
 
-   cursor.execute("SELECT username, email FROM userdata")
-   myresult = cursor.fetchall()
+            email(myresult[0][0], stock+" price change!\n"+"New price: "+str(newprice)+"\n"+"Change By: "+str(plusminus))
+            return
+   # cursor.execute("SELECT username, email FROM userdata")
 
-   for x in myresult:
-      print(x)
-  
+
+@app.route('/notify', methods=['GET','POST'])
+@login_required
+def return_notify_page():
+
+   #parse_information()
 
    if request.method == 'POST':
       gmail_user = 'smoothstocks1@gmail.com'
@@ -187,6 +212,8 @@ def return_discover_template_page():
    eps_current_year = " EPS Current Year: " + str(dict.get('quoteResponse').get('result')[0].get('epsCurrentYear'))
    price_eps_current_year = " Price EPS Current Year: " + str(dict.get('quoteResponse').get('result')[0].get('priceEpsCurrentYear'))
    average_analyst_rating = " Average Analyst Rating: " + dict.get('quoteResponse').get('result')[0].get('averageAnalystRating')
+
+   parse_information(stock_symbol,current_stock_price,current_plus_minus)
 
    # Return html page to be rendered
    return render_template('discover_template.html', Stock_Name=stock_symbol, Company=company, Current_Stock_Price=current_stock_price, Current_plus_minus=current_plus_minus, Price_History=price_history, Fifty_Two_Week_Range=fifty_two_week_range, Fifty_Day_Average=fifty_day_average, Two_Hundred_Day_Average=two_hundred_day_average, EPS_Current_Year=eps_current_year, Price_EPS_Current_Year=price_eps_current_year, Average_Analyst_Rating=average_analyst_rating)
