@@ -33,34 +33,7 @@ mydb = mysql.connector.connect(
 
 import data_structures as DS
 import path_calls
-def sanitize(str):
-    count = 0
-    a = str.replace(",", "")
-    idx = a.find(".")
-    for i in range(idx, len(a) - 1):
-        count += 1
-    if count < 2 :
-        store = a + "0"
-        return store
-    return a
-def obtain_price(ticker):
-    url = "https://yfapi.net/v6/finance/quote"
-    query_string_msg = ticker + ",EURUSD=X"
-    querystring = {"symbols": ""}
-    querystring["symbols"] = query_string_msg
-    headers = {
-        'x-api-key': "hlb79LxeLF55X2SoJI0wA3UJSrpuB5ML89Ap8lK7"
-    }
-    response = requests.request("GET", url, headers=headers, params=querystring)
-    response_as_bit_string = response.content
-    int = response_as_bit_string.find(b'ask')
-    build = b''
-    for i in range(int, int + 11):
-        build += response_as_bit_string[i:i + 1]
 
-    str_build = str(build)
-    price_str = str_build[7:len(str_build) - 1]
-    return price_str
 
 
 @app.route('/',methods =["GET", "POST"])
@@ -227,8 +200,8 @@ def return_support_page():
     user_stock_list=["AAPL","NVDA","GOOG","GME"]
     prices = []
     for i in range(len(user_stock_list)):
-        cur = obtain_price(user_stock_list[i])
-        sanitized = sanitize(cur)
+        cur = path_calls.obtain_price(user_stock_list[i])
+        sanitized = path_calls.sanitize(cur)
         prices.insert(len(prices), sanitized)
     for i in range(len(user_stock_list)):
         s_name = user_stock_list[i]
