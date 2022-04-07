@@ -4,17 +4,24 @@
 		<meta charset="utf-8">
 		<meta name="author" content="David Tan">
 		<meta name="keywords" content="HTML, CSS">
-		<title>Homepage</title>
 		
 	</head>
 	<body>
-		<script type="module" src = "/script.js"></script>
+		<!--<script type=text/javascript src="{{url_for('static', filename='index.js')}}"></script>-->
 
-		<script type="text/javascript" src="index.js"></script>
+		<div id = "topbar">
+
+			<a href="CreateAccount"><button>Create Account</button></a>
+			<a href="442"><button>Landing Page</button></a>
+			<a href="news"><button>News</button></a>
+			<a href="discover"><button>Discover</button></a>
+			<a href="logout"><button>Logout</button></a>
+		  
+		</div>
+
 		<div class="ui">
 			
 			<div class="info">
-				<a href="442"><button>Landing Page</button></a>
 				<div class="tba">User info</div>
 			</div>
 			
@@ -28,9 +35,14 @@
 					<button class="but2">Notify when price change 10%</button> 
 				</div>
 				
-				<div> 
-					<input type="text" id="textbox_2" class="textbox_2" placeholder='Enter Email'>
-					<button onclick="change_notify();"> Set Email </button>	
+
+
+				<form action="/notify" enctype="multipart/form-data id="send_email" method="POST">
+
+					<input id="textbox_2" name="newemail" type="text" placeholder="Enter Email" >
+					<input type="submit" value="Set Email"></input>
+				</form>				
+						
 
 				</div>
 			</div>
@@ -39,6 +51,16 @@
 </html>
 
 <style>
+
+div#topbar {
+
+width:100%;
+margin:auto;
+border:15px groove #CCCC99;
+background-color:blue;
+text-align:center;
+}
+
 body{
 	background-color:gray;
 }

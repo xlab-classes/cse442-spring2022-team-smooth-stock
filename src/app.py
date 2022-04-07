@@ -2,10 +2,11 @@ from flask import Flask, render_template, request
 from flask_login import LoginManager, UserMixin, login_required, current_user, login_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
 from mysql.connector import connect, Error
+import mysql.connector
 import os
 import requests
 import json
-
+import smtplib
 
 
 t_dir = os.path.abspath('../html')
@@ -51,10 +52,76 @@ def create_account() :
 def return_landing_page():
    return render_template('LandingPage.html')
 
-@app.route('/notify')
+
+@app.route('/notify', methods=['GET','POST'])
 @login_required
 def return_notify_page():
+
+
+   mydb = mysql.connector.connect(
+         host="oceanus.cse.buffalo.edu",
+         user="dtan2",
+         password="50278774",
+         database="cse442_2022_spring_team_q_db"
+      )
+   
+
+   cursor = mydb.cursor()
+
+   cursor.execute("SELECT username, stocks FROM saved_stocks")
+   myresult = cursor.fetchall()
+
+   for x in myresult:
+      print(x)
+  
+
+   cursor.execute("SELECT username, email FROM userdata")
+   myresult = cursor.fetchall()
+
+   for x in myresult:
+      print(x)
+  
+
+   if request.method == 'POST':
+      gmail_user = 'smoothstocks1@gmail.com'
+      gmail_password =  '!qazxsw23'
+      to = request.form["newemail"]
+
+      # mydb = mysql.connector.connect(
+      #    host="oceanus.cse.buffalo.edu",
+      #    user="dtan2",
+      #    password="50278774",
+      #    database="cse442_2022_spring_team_q_db"
+      # )
+
+      # cursor = mydb.cursor()
+      # cursor.execute("SELECT * FROM userdata")
+      # myresult = cursor.fetchall()
+      email_message = ""
+
+      # for x in myresult :
+      #    email_message = email_message+" "+str(x)
+
+      email_text = """\
+      From: %s
+      To: %s
+      Subject: %s
+
+      %s
+      """ % (gmail_user, ", ".join(to), "stocks", email_message)
+
+      try:
+         smtp_server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+         smtp_server.ehlo()
+         smtp_server.login(gmail_user, gmail_password)
+         smtp_server.sendmail(gmail_user, to, email_message)
+         smtp_server.close()
+         print ("Email sent successfully!")
+      except Exception as ex:
+         print ("Something went wrong….",ex)
+
    return render_template('notify.html')
+   
 
 @app.route('/discover')
 @login_required
@@ -127,6 +194,10 @@ def return_discover_template_page():
 @app.route('/442')
 def return_442_page():
    return render_template('442.html')
+
+
+
+
 
 
 @app.route('/test_login')
