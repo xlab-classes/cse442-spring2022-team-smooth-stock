@@ -4,7 +4,7 @@ import bcrypt
 from app import DS
 from app import database
 from app import mydb
-#from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup
 import requests
 import mysql.connector
 import json
@@ -103,7 +103,7 @@ def save_yahoo_xml(url):
         response = requests.get(url)
         with open("a.xml", 'wb') as f:
                 f.write(response.content)
-"""
+
 def parse_xml():
         save_yahoo_xml("https://finance.yahoo.com/rss/")
         with open("a.xml", "r") as file:
@@ -121,7 +121,7 @@ def parse_xml():
                         links.append(link)
                 d = list(zip(titles, links))
         return d
-"""
+
 
 # follow function. Connects to the database and updates the current User's
 # list of followed stocks
