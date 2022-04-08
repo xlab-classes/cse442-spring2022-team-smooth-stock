@@ -1,3 +1,4 @@
+from re import L
 from flask import Flask, render_template, request
 from flask_login import LoginManager, UserMixin, login_required, current_user, login_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
@@ -75,6 +76,18 @@ def email(sender_to, message):
       print ("Something went wrong….",ex)
 
 
+def where(stock, name, username,cursor, newprice, plusminus):
+   if stock == name:
+      cursor.execute("SELECT email, username FROM userdata")
+      myresults = cursor.fetchall()
+
+      for s in myresults:
+         print(s[1])
+         if username==s[1]:
+            print(s[0])
+            email(s[0], stock+" price change!\n"+"New price: "+str(newprice)+"\n"+"Change By: "+str(plusminus))
+            return True
+   return False
 
 def parse_information(name, newprice, plusminus):
    mydb = mysql.connector.connect(
@@ -90,14 +103,10 @@ def parse_information(name, newprice, plusminus):
 
    for x in myresult:
       arr_stock = x[1].split(", ")
+      username = x[0]
       for stock in arr_stock:
-         if stock == name:
-            cursor.execute("SELECT email FROM userdata "
-            "WHERE username == "+x[0])
-            myresult = cursor.fetchall()
-
-            email(myresult[0][0], stock+" price change!\n"+"New price: "+str(newprice)+"\n"+"Change By: "+str(plusminus))
-            return
+          if where(stock, name, username, cursor, newprice, plusminus):
+            break
    # cursor.execute("SELECT username, email FROM userdata")
 
 
@@ -105,45 +114,13 @@ def parse_information(name, newprice, plusminus):
 @login_required
 def return_notify_page():
 
-   #parse_information()
+   
+
+   #parse_information("APPL", 170, 10)
 
    if request.method == 'POST':
-      gmail_user = 'smoothstocks1@gmail.com'
-      gmail_password =  '!qazxsw23'
       to = request.form["newemail"]
-
-      # mydb = mysql.connector.connect(
-      #    host="oceanus.cse.buffalo.edu",
-      #    user="dtan2",
-      #    password="50278774",
-      #    database="cse442_2022_spring_team_q_db"
-      # )
-
-      # cursor = mydb.cursor()
-      # cursor.execute("SELECT * FROM userdata")
-      # myresult = cursor.fetchall()
       email_message = ""
-
-      # for x in myresult :
-      #    email_message = email_message+" "+str(x)
-
-      email_text = """\
-      From: %s
-      To: %s
-      Subject: %s
-
-      %s
-      """ % (gmail_user, ", ".join(to), "stocks", email_message)
-
-      try:
-         smtp_server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-         smtp_server.ehlo()
-         smtp_server.login(gmail_user, gmail_password)
-         smtp_server.sendmail(gmail_user, to, email_message)
-         smtp_server.close()
-         print ("Email sent successfully!")
-      except Exception as ex:
-         print ("Something went wrong….",ex)
 
    return render_template('notify.html')
    
