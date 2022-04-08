@@ -12,9 +12,9 @@
         <div id = "topbar">
 
             <button type="button" onclick="alert('Hello world!')">Home</button>
-            <button type="button" onclick="alert('Hello world!')">Select Stocks</button>
-            <button type="button" onclick="alert('Hello world!')">Follow</button>
-            <button type="button" onclick="alert('Hello world!')">Testing</button>
+            <button type="button" onclick="alert('Hello world!')">Discover</button>
+            <button type="button" onclick="alert('Hello world!')">News</button>
+            <button type="button" onclick="alert('Hello world!')">Notification</button>
             <a href="logout"><button>Logout</button></a>
 
          </div>
@@ -37,7 +37,15 @@
             <div class="price-history"> {{ Price_History }} <br> {{ Fifty_Two_Week_Range }} <br> {{ Fifty_Day_Average }} <br> {{ Two_Hundred_Day_Average }} <br> {{ EPS_Current_Year }} <br> {{ Price_EPS_Current_Year }} <br> {{ Average_Analyst_Rating }} </div>
 
             <!-- Replace this line of the template to display searched stocks Current Price -->
-            <div class="stock-name">{{ Stock_Name }} <br> {{ Company }} <br> {{ Current_Stock_Price }} <br> {{ Current_plus_minus }} <br> <button class="button">Follow Stock</button></div>
+            <div class="stock-name">{{ Stock_Name }} <br> {{ Company }} <br> {{ Current_Stock_Price }} <br> {{ Current_plus_minus }} <br> 
+                
+                <form action="/follow">
+
+                    <button class="button" >Follow Stock</button>
+                    
+                </form>
+                
+            </div>
 
             <!-- Replace this line of the template to display news articles relevant to search stock -->
             <div class="related-news">Related News Articles<br> {{ Article_1 }} <br> {{ Article_2 }} <br> {{ Article_3 }} </div>

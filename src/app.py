@@ -1,5 +1,5 @@
 from re import L
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session
 from flask_login import LoginManager, UserMixin, login_required, current_user, login_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
 from mysql.connector import connect, Error
@@ -8,6 +8,8 @@ import os
 import requests
 import json
 import smtplib
+import time
+
 
 
 t_dir = os.path.abspath('../html')
@@ -23,8 +25,18 @@ login_manager = LoginManager()
 login_manager.login_view = 'login_needed'
 login_manager.init_app(app)
 
+mydb = mysql.connector.connect(
+   host="oceanus.cse.buffalo.edu",
+   user="kptodd",
+   password="50318271",
+   database="cse442_2022_spring_team_q_db"
+)
+
+
 import data_structures as DS
 import path_calls
+
+
 
 @app.route('/',methods =["GET", "POST"])
 def login():
@@ -38,9 +50,10 @@ def login_needed():
    return render_template('LoginPage.html', error = "Access denied, login required.")
 
 @app.route('/news')
-@login_required
+#@login_required
 def return_news():
-   return render_template('news.html')
+   xml = path_calls.parse_xml()
+   return render_template('news.html', title=xml)
 
 @app.route('/create_account',methods =["GET", "POST"])
 def create_account() :
@@ -126,10 +139,9 @@ def return_notify_page():
    
 
 @app.route('/discover')
-@login_required
+#@login_required
 def return_discover_page():
    return render_template('discover.html')
-
 
 @app.route('/logout')
 @login_required
@@ -137,34 +149,14 @@ def logout():
    logout_user()
    return render_template('LoginPage.html')
 
-@app.route('/find-stock', methods=["POST"])
+@app.before_first_request
+def create_tables():
+    database.create_all()
+
+@app.route('/follow')
 @login_required
-def return_discover_template_page():
-
-   """
-   Variables to be obtained from Yahoo Finance API to be displayed on web page:
-   1. Price History
-   2. Fifty_Two_Week_Range
-   3. Fifty_Day_Average
-   4. Two_Hundred_Day_Average
-   5. EPS_Current_Year
-   6. Price_EPS_Current_Year
-   7. Average_Analyst_Rating
-   8. Stock_Name -> Symbol of the stock being searched
-   9. Company
-   10. Current_Stock_Price
-   11. Current_plus_minus
-   """
-
-   # Get the company sybmol user is looking for
-   company_symbol = request.form.get('stock')
-   print(company_symbol)
-
-   # Create url for Yahoo Finace API
-   url = "https://yfapi.net/v6/finance/quote"
-
-   # Create querystring to find company stock info
-   querystring = {"symbols":company_symbol}
+def follow():
+   #return(path_calls.follow())
    
    # Create headers dictionary with API Key
    headers = {
@@ -190,48 +182,119 @@ def return_discover_template_page():
    price_eps_current_year = " Price EPS Current Year: " + str(dict.get('quoteResponse').get('result')[0].get('priceEpsCurrentYear'))
    average_analyst_rating = " Average Analyst Rating: " + dict.get('quoteResponse').get('result')[0].get('averageAnalystRating')
 
-   parse_information(stock_symbol,current_stock_price,current_plus_minus)
+   #send notification
+   parse_information(company, current_stock_price, current_plus_minus)
 
    # Return html page to be rendered
    return render_template('discover_template.html', Stock_Name=stock_symbol, Company=company, Current_Stock_Price=current_stock_price, Current_plus_minus=current_plus_minus, Price_History=price_history, Fifty_Two_Week_Range=fifty_two_week_range, Fifty_Day_Average=fifty_day_average, Two_Hundred_Day_Average=two_hundred_day_average, EPS_Current_Year=eps_current_year, Price_EPS_Current_Year=price_eps_current_year, Average_Analyst_Rating=average_analyst_rating)
 
+
+@app.route('/find-stock', methods=["POST"])
+#@login_required
+def return_discover_template_page():
+   return(path_calls.return_discover_template_page())
+   
 @app.route('/442')
 def return_442_page():
+   time.sleep(3)
    return render_template('442.html')
 
 
 
+# hlb79LxeLF55X2SoJI0wA3UJSrpuB5ML89Ap8lK7
+@app.route('/support')
+def return_support_page():
+    table_head = "<tr id = 'joe'><div class = 'na'><th>Stock Name</th><th>Stock Price</th><th>Loss / Gain</th></div></tr>"
+    ###########------------------------------##################################
+    #retreive from a DB (auto build)
+    user_stock_list=["AAPL","NVDA","GOOG","GME"]
+    prices = []
+    for i in range(len(user_stock_list)):
+        cur = path_calls.obtain_price(user_stock_list[i])
+        sanitized = path_calls.sanitize(cur)
+        prices.insert(len(prices), sanitized)
+    for i in range(len(user_stock_list)):
+        s_name = user_stock_list[i]
+        s_price = prices[i]
+        txt1 = "<tr><td>{stock_name}</td><td>{stock_price}</td><td>{to_decide}</td></tr>".format(stock_name = s_name ,stock_price = s_price, to_decide = 1)
+        table_head += txt1
+    return render_template('support.html', generate_table=table_head)
 
 
-
+# test
 @app.route('/test_login')
 @login_required
 def test_login():
    return ("You are logged in!")
 
+@app.route('/db_test3')
+def test_db3():
+   username = ["test1"]
+   mycursor = mydb.cursor()
+   sql = "SELECT * FROM userdata WHERE username = %s"
+   mycursor.execute(sql, username)
+   myresult = mycursor.fetchall()
+
+   if myresult:
+      print("Something",myresult[0][2])
+   else:
+      print("nothing!")
+
+   for x in myresult :
+      print(x)
+   return "view terminal to view databases"
+
+
+@app.route('/db_view_users')
+def try_db_connect2():
+   cursor = mydb.cursor()
+   cursor.execute("SELECT * FROM userdata")
+   myresult = cursor.fetchall()
+
+   for x in myresult :
+      print(x)
+   return "view terminal to view databases"
+
 @app.route('/db_test')
 def try_db_connect():
-   databases = ""
-   try:
-    with connect(
-        host="oceanus.cse.buffalo.edu",
-        user="jakeheid",
-        password="50271130",
-    ) as connection:
-        db_query = "SHOW DATABASES;"
-        with connection.cursor() as cursor:
-            cursor.execute(db_query)
-            for db in cursor:
-               print(db)
-               
 
-   except Error as e:
-      print(e)
+   cursor = mydb.cursor()
+
+   sql = "DROP TABLE userdata"
+
+   cursor.execute(sql)
+
+   cursor.execute(
+      "CREATE TABLE userdata (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(255), email VARCHAR(255),password VARCHAR(255),salt VARCHAR(255),is_active INT)")
+
+   sql = "INSERT INTO userdata (username, email,password,salt,is_active) VALUES (%s, %s, %s, %s, %s)"
+   val = ("test1", "email1", "pass1", "salt1", 0)
+   cursor.execute(sql, val)
+   mydb.commit()
+
+   cursor.execute("SELECT * FROM userdata")
+   myresult = cursor.fetchall()
+
+   for x in myresult :
+      print(x)
    return "view terminal to view databases"
+
+@app.route('/get_news')
+def get_news():
+   news = path_calls.parse_xml()
+   return news
 
 @login_manager.user_loader
 def user_loader(user_id):
-   return DS.Account.query.get(int(user_id))
+   print("TEST?")
+   print(path_calls.online_users)
+   value = int(user_id)
+   for x in path_calls.online_users :
+      if x.id == value:
+         print(x)
+         return x
+   print("not found")
+   return DS.User()
 
 if __name__ == '__main__':
    app.run()
