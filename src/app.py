@@ -93,6 +93,8 @@ def follow():
 @app.route('/find-stock', methods=["POST"])
 #@login_required
 def return_discover_template_page():
+   # Add searched stock to the session
+   session['searched-stock'] = request.form.get('stock')
    return(path_calls.return_discover_template_page())
    
 @app.route('/442')

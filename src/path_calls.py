@@ -115,6 +115,9 @@ def create_account(request):
     mycursor.execute(sql, val)
     mydb.commit()
 
+    sql = "SET FOREIGN_KEY_CHECKS=1"
+    mycursor.execute(sql)
+
     errorlist = "Account created!"
     return render_template('CreateAccount.html', error = errorlist)
 
@@ -145,44 +148,77 @@ def parse_xml():
 # list of followed stocks
 def follow():
 
-   # Connect to database
-   mydb = mysql.connector.connect(
-      host="oceanus.cse.buffalo.edu",
-      user="mdlaszlo",
-      password="50265202",
-      database="cse442_2022_spring_team_q_db"
-   )
+    # Get current stock from session
+    current_stock = session.get('searched-stock')
+    print("current_stock ->", current_stock)
 
-   # Create cursor
-   cursor = mydb.cursor()
+    # Connect to database
+    mydb = mysql.connector.connect(
+        host="oceanus.cse.buffalo.edu",
+        user="mdlaszlo",
+        password="50265202",
+        database="cse442_2022_spring_team_q_db"
+    )
 
-   # Disable Foreign Key Checks (for now)
-   sql = "SET FOREIGN_KEY_CHECKS=0"
-   cursor.execute(sql)
+    # Create cursor
+    cursor = mydb.cursor()
 
-   # Create sql command
-   sql = "INSERT INTO saved_stocks (userID, username, stocks) VALUES (%s, %s, %s)"
+    # Disable Foreign Key Checks (for now)
+    sql = "SET FOREIGN_KEY_CHECKS=0"
+    cursor.execute(sql)
 
-   # Create values
-   vals = ("-1", "fake_user_1", "APPL, MSFT, TSLA")
+    # Get the current user from the session
+    current_user = session.get('username')
+    print("current_user = ", current_user)
 
-   # Execute command
-   cursor.execute(sql, vals)
-   mydb.commit()
+    # Fetch current_user's record from saved_stocks Tabke
+    sql = "SELECT stocks FROM saved_stocks WHERE username = %s"
+    cursor.execute(sql, [current_user])
+    record = cursor.fetchone()
+    print("stocks followed ->", record[0])
+    stocks_followed = record[0]
 
-   # Print saved_stocks information
-   cursor.execute("SELECT * FROM saved_stocks")
-   myresult = cursor.fetchall()
+    # IF stocks_followed is an empty string
+    if(stocks_followed == ""):
 
-   for x in myresult :
-      print(x)
+        # Just add stock to stocks_followed string
+        stocks_followed = stocks_followed + current_stock
 
-   # Re-enable Foreign Key Checks (for now)
-   sql = "SET FOREIGN_KEY_CHECKS=1"
-   cursor.execute(sql)
+    else:
 
-   # Render initial discover page (for now)
-   return render_template('discover.html')
+        # Split by comma to get indvidual stocks followed by User
+        stocks = stocks_followed.split(",")
+
+        # Initialize new_stock to True
+        new_stock = True
+
+        # For each entry in stocks
+        for stock in stocks:
+
+            # If stock equals current_stock
+            if(stock == current_stock):
+
+                # Set new_stock to False
+                new_stock = False
+       
+        # If new_stock is True
+        if(new_stock):
+            
+            # Add , then stock to stocks_followed string
+            stocks_followed = stocks_followed + ", " + current_stock
+
+    # Update saved_stock Table for User 
+    sql = "UPDATE saved_stocks SET stocks = %s WHERE username = %s"
+    val = (stocks_followed, current_user)
+    cursor.execute(sql, val)
+    mydb.commit()
+
+    # Print saved_stocks information
+    cursor.execute("SELECT * FROM saved_stocks")
+    myresult = cursor.fetchall()
+
+    # Render initial discover page (for now)
+    return render_template('discover.html')
 
 #return_discover_template_page.
 def return_discover_template_page():
