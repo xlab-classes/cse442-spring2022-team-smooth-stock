@@ -44,6 +44,10 @@ def login(request):
             newlogin.is_active=True
             online_users.append(newlogin)
             print(login_user(newlogin)) #set cookies to show user is logged in
+
+            # Store User username to session
+            session['username'] = username
+
             return render_template('LoginPage.html', error = "You're logged in!")
         else :
             return render_template('LoginPage.html', error = "Wrong password")
