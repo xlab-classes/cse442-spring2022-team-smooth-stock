@@ -91,8 +91,23 @@ def create_account(request):
     salt = salt.decode()#encode the salt for putting into sql
     hashed_password = hashed_password.decode()
 
+    # Insert User account information into userdata Table
     sql = "INSERT INTO userdata (username, email,password,salt) VALUES (%s, %s, %s, %s)"
     val = (username, email, hashed_password, salt)
+    mycursor.execute(sql, val)
+    mydb.commit()
+
+    # Insert User account information into saved_stocks Table
+    sql = "SELECT * FROM userdata WHERE username = %s"
+    mycursor.execute(sql, [username])
+    user_id = mycursor.fetchone()
+    print("user_id =", user_id[0])
+
+    sql = "SET FOREIGN_KEY_CHECKS=0"
+    mycursor.execute(sql)
+
+    sql = "INSERT INTO saved_stocks (userID, username, stocks) VALUES (%s, %s, %s)"
+    val = (user_id[0], user_id[1], "")
     mycursor.execute(sql, val)
     mydb.commit()
 

@@ -70,7 +70,7 @@ def return_notify_page():
    return render_template('notify.html')
 
 @app.route('/discover')
-#@login_required
+@login_required
 def return_discover_page():
    return render_template('discover.html')
 
