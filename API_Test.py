@@ -68,7 +68,7 @@ new_string += " Price EPS Current Year: " + str(dict.get('quoteResponse').get('r
 new_string += " Average Analyst Rating: " + dict.get('quoteResponse').get('result')[0].get('averageAnalystRating') 
 file_data = file_data.replace("Stock History (as a visual)", new_string)
 
-# Wtire file data to output file
+# Write file data to output file
 output_file = open("updated_find_stock.html", "w")
 output_file.write(file_data)
 output_file.close()
