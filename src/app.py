@@ -9,6 +9,7 @@ import requests
 import json
 import smtplib
 import time
+from discord import SyncWebhook
 
 
 
@@ -123,6 +124,12 @@ def parse_information(name, newprice, plusminus):
    # cursor.execute("SELECT username, email FROM userdata")
 
 
+def discord_notity(message):
+   url = "https://discord.com/api/webhooks/950491418491752448/ZKjXE4laBmFGZxbls5cpZhZ3lbqiO8DXR6S9UweEQ_uowDXeh2kBmnflT9nQh6sJq47K"
+   webhook = SyncWebhook.from_url(url)
+   webhook.send(message)
+
+
 @app.route('/notify', methods=['GET','POST'])
 @login_required
 def return_notify_page():
@@ -156,7 +163,7 @@ def create_tables():
 @app.route('/follow')
 @login_required
 def follow():
-   #return(path_calls.follow())
+   return(path_calls.follow())
    
    # Create headers dictionary with API Key
    headers = {
@@ -182,9 +189,10 @@ def follow():
    price_eps_current_year = " Price EPS Current Year: " + str(dict.get('quoteResponse').get('result')[0].get('priceEpsCurrentYear'))
    average_analyst_rating = " Average Analyst Rating: " + dict.get('quoteResponse').get('result')[0].get('averageAnalystRating')
 
-   #send notification
+   #send notification email and discord
    parse_information(company, current_stock_price, current_plus_minus)
-
+   discord_notity(str(company)+" price change to: "+current_stock_price+" changed by: "+current_plus_minus)
+   
    # Return html page to be rendered
    return render_template('discover_template.html', Stock_Name=stock_symbol, Company=company, Current_Stock_Price=current_stock_price, Current_plus_minus=current_plus_minus, Price_History=price_history, Fifty_Two_Week_Range=fifty_two_week_range, Fifty_Day_Average=fifty_day_average, Two_Hundred_Day_Average=two_hundred_day_average, EPS_Current_Year=eps_current_year, Price_EPS_Current_Year=price_eps_current_year, Average_Analyst_Rating=average_analyst_rating)
 
