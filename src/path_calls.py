@@ -428,4 +428,19 @@ def obtain_price(ticker):
     return price_str
 
 
+def get_user_stocks(username):
+    db = mysql.connector.connect(
+        host="oceanus.cse.buffalo.edu",
+        user="jakeheid",
+        password="50271130",
+        database="cse442_2022_spring_team_q_db"
+    )
+    cursor = db.cursor()
+    saved_stocks_query = "SELECT stocks FROM saved_stocks WHERE username = %s"
+    saved_stocks_params = [username]
+    cursor.execute(saved_stocks_query, saved_stocks_params)
+    stocks = str.split(cursor.fetchone()[0], '~')
+    return stocks
+
+
 
