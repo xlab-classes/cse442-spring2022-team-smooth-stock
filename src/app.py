@@ -1,7 +1,7 @@
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, session,url_for, redirect
 from flask_login import LoginManager, UserMixin, login_required, current_user, login_user, logout_user
-from flask_sqlalchemy import SQLAlchemy
 from mysql.connector import connect, Error
+from flask_mail import Mail, Message
 import mysql.connector
 import os
 import requests
@@ -9,19 +9,28 @@ import json
 import time
 
 
-
 t_dir = os.path.abspath('../html')
 app = Flask(__name__, template_folder=t_dir)
 
 ##Temp database code for SQLalchemy, will need to be changed later for the server SQL
-database = SQLAlchemy(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.sqlite3'
+
 app.config['SECRET_KEY']   = "tempkey123321"
-database.init_app(app)
+
 
 login_manager = LoginManager()
 login_manager.login_view = 'login_needed'
 login_manager.init_app(app)
+
+#create mail object
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_USERNAME'] = 'SmoothStocksApp@gmail.com'
+app.config['MAIL_PASSWORD'] = 'Twisted7Seven7'
+app.config['MAIL_DEFAULT_SENDER'] = 'SmoothStocksApp@gmail.com'
+
+mail = Mail(app)
+
 
 mydb = mysql.connector.connect(
    host="oceanus.cse.buffalo.edu",
@@ -33,6 +42,8 @@ mydb = mysql.connector.connect(
 
 import data_structures as DS
 import path_calls
+import email_path
+
 def sanitize(str):
     count = 0
     a = str.replace(",", "")
@@ -108,9 +119,6 @@ def logout():
    logout_user()
    return render_template('LoginPage.html')
 
-@app.before_first_request
-def create_tables():
-    database.create_all()
 
 @app.route('/follow')
 #@login_required
@@ -238,12 +246,16 @@ def return_support_page():
     return render_template('support.html', generate_table=table_head)
 
 
+#new path for confirming a email token
+@app.route('/reset/<token>', methods=["GET", "POST"])
+def token_reset(token):
+    return email_path.token_reset(token)
 
 
 
-
-
-# test
+@app.route('/reset', methods=["GET", "POST"])
+def reset_email():
+    return email_path.reset_email()
 
 @app.route('/test_login')
 @login_required

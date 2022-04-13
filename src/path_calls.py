@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, session
 from flask_login import login_user
 import bcrypt
 from app import DS
-from app import database
 from app import mydb
 from bs4 import BeautifulSoup
 import requests
