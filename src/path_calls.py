@@ -454,6 +454,8 @@ def ticker_to_stock_name(ticker):
         return "apple"
     elif ticker == "MSFT":
         return "microsoft"
+    else:
+        return "not implemented"
 
 
 
