@@ -9,7 +9,7 @@ import requests
 import mysql.connector
 import json
 import smtplib
-from discord import SyncWebhook
+#from discord import SyncWebhook
 
 online_users = []
 
@@ -235,10 +235,10 @@ def follow():
 
 
 
-def discord_notity(message):
-   url = "https://discord.com/api/webhooks/950491418491752448/ZKjXE4laBmFGZxbls5cpZhZ3lbqiO8DXR6S9UweEQ_uowDXeh2kBmnflT9nQh6sJq47K"
-   webhook = SyncWebhook.from_url(url)
-   webhook.send(message)
+# def discord_notity(message):
+#    url = "https://discord.com/api/webhooks/950491418491752448/ZKjXE4laBmFGZxbls5cpZhZ3lbqiO8DXR6S9UweEQ_uowDXeh2kBmnflT9nQh6sJq47K"
+#    webhook = SyncWebhook.from_url(url)
+#    webhook.send(message)
 
 
 #send the email to user message being what you want to say
@@ -435,11 +435,13 @@ def get_user_stocks(username):
         password="50271130",
         database="cse442_2022_spring_team_q_db"
     )
+    username = "fakeuser" #set for testing #77
     cursor = db.cursor()
     saved_stocks_query = "SELECT stocks FROM saved_stocks WHERE username = %s"
     saved_stocks_params = [username]
     cursor.execute(saved_stocks_query, saved_stocks_params)
-    stocks = str.split(cursor.fetchone()[0], '~')
+    stocks = str.split(cursor.fetchone()[0], ', ')
+    print(stocks)
     return stocks
 
 

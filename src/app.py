@@ -9,7 +9,7 @@ import requests
 import json
 import smtplib
 import time
-from discord import SyncWebhook
+#from discord import SyncWebhook
 
 
 
@@ -54,7 +54,15 @@ def login_needed():
 #@login_required
 def return_news():
    xml = path_calls.parse_xml()
-   return render_template('news.html', title=xml)
+   filtered_xml = []
+   #username = session.get('username')
+   #user_stocks = path_calls.get_user_stocks(username)[0]
+   for title, link in xml:
+      lower = title.lower()
+      if "paypal" in lower or "dwac" in lower:
+         filtered_xml.append((title, link))
+   print(filtered_xml)
+   return render_template('news.html', title=filtered_xml)
 
 @app.route('/create_account',methods =["GET", "POST"])
 def create_account() :
@@ -124,10 +132,10 @@ def parse_information(name, newprice, plusminus):
    # cursor.execute("SELECT username, email FROM userdata")
 
 
-def discord_notity(message):
-   url = "https://discord.com/api/webhooks/950491418491752448/ZKjXE4laBmFGZxbls5cpZhZ3lbqiO8DXR6S9UweEQ_uowDXeh2kBmnflT9nQh6sJq47K"
-   webhook = SyncWebhook.from_url(url)
-   webhook.send(message)
+# def discord_notity(message):
+#    url = "https://discord.com/api/webhooks/950491418491752448/ZKjXE4laBmFGZxbls5cpZhZ3lbqiO8DXR6S9UweEQ_uowDXeh2kBmnflT9nQh6sJq47K"
+#    webhook = SyncWebhook.from_url(url)
+#    webhook.send(message)
 
 
 @app.route('/notify', methods=['GET','POST'])
@@ -156,9 +164,9 @@ def logout():
    logout_user()
    return render_template('LoginPage.html')
 
-@app.before_first_request
-def create_tables():
-    database.create_all()
+# @app.before_first_request
+# def create_tables():
+#     database.create_all()
 
 @app.route('/follow')
 @login_required
