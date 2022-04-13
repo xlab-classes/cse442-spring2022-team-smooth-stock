@@ -163,7 +163,7 @@ def follow():
     # Create cursor
     cursor = mydb.cursor()
 
-    # Disable Foreign Key Checks (for now)
+    # Disable Foreign Key Checks 
     sql = "SET FOREIGN_KEY_CHECKS=0"
     cursor.execute(sql)
 
@@ -207,6 +207,13 @@ def follow():
             # Add , then stock to stocks_followed string
             stocks_followed = stocks_followed + ", " + current_stock
 
+        # Else new_stock is False, User was already following this stock
+        else:
+
+            # Remove current_stock from stocks_followed
+            stocks_followed = stocks_followed.replace((current_stock + ", "), "", 1)
+            stocks_followed = stocks_followed.replace((", " + current_stock), "", 1)
+
     # Update saved_stock Table for User 
     sql = "UPDATE saved_stocks SET stocks = %s WHERE username = %s"
     val = (stocks_followed, current_user)
@@ -217,63 +224,109 @@ def follow():
     cursor.execute("SELECT * FROM saved_stocks")
     myresult = cursor.fetchall()
 
+    # Re-enable Foreign Key Checks 
+    sql = "SET FOREIGN_KEY_CHECKS=1"
+    cursor.execute(sql)
+
     # Render initial discover page (for now)
     return render_template('discover.html')
 
 #return_discover_template_page.
 def return_discover_template_page():
 
-   """
-   Variables to be obtained from Yahoo Finance API to be displayed on web page:
-   1. Price History
-   2. Fifty_Two_Week_Range
-   3. Fifty_Day_Average
-   4. Two_Hundred_Day_Average
-   5. EPS_Current_Year
-   6. Price_EPS_Current_Year
-   7. Average_Analyst_Rating
-   8. Stock_Name -> Symbol of the stock being searched
-   9. Company
-   10. Current_Stock_Price
-   11. Current_plus_minus
-   """
+    """
+    Variables to be obtained from Yahoo Finance API to be displayed on web page:
+    1. Price History
+    2. Fifty_Two_Week_Range
+    3. Fifty_Day_Average
+    4. Two_Hundred_Day_Average
+    5. EPS_Current_Year
+    6. Price_EPS_Current_Year
+    7. Average_Analyst_Rating
+    8. Stock_Name -> Symbol of the stock being searched
+    9. Company
+    10. Current_Stock_Price
+    11. Current_plus_minus
+    """
 
-   # Get the company sybmol user is looking for
-   company_symbol = request.form.get('stock')
-   print(company_symbol)
+    # Get the company sybmol user is looking for
+    company_symbol = request.form.get('stock')
+    print(company_symbol)
 
-   # Create url for Yahoo Finace API
-   url = "https://yfapi.net/v6/finance/quote"
+    # Create url for Yahoo Finace API
+    url = "https://yfapi.net/v6/finance/quote"
 
-   # Create querystring to find company stock info
-   querystring = {"symbols":company_symbol}
+    # Create querystring to find company stock info
+    querystring = {"symbols":company_symbol}
    
-   # Create headers dictionary with API Key
-   headers = {
-      'x-api-key': "REiSqBThOa9z6bIgDGJ2l4S92jMKXl8O1yRsROBK"
-   }
+    # Create headers dictionary with API Key
+    headers = {
+        'x-api-key': "REiSqBThOa9z6bIgDGJ2l4S92jMKXl8O1yRsROBK"
+    }
 
-   # Send request to Yahoo Finance API and store response
-   response = requests.request("GET", url, headers=headers, params=querystring)
+    # Send request to Yahoo Finance API and store response
+    response = requests.request("GET", url, headers=headers, params=querystring)
 
-   # Load response as a dictionary
-   dict = json.loads(response.text)
+    # Load response as a dictionary
+    dict = json.loads(response.text)
 
-   # Initialize variables stated at beginning of function 
-   stock_symbol = dict.get('quoteResponse').get('result')[0].get('symbol')
-   company = dict.get('quoteResponse').get('result')[0].get('displayName')
-   current_stock_price = str(dict.get('quoteResponse').get('result')[0].get('regularMarketPrice'))
-   current_plus_minus = str(dict.get('quoteResponse').get('result')[0].get('regularMarketChangePercent'))
-   price_history = company + "'s Price History"
-   fifty_two_week_range = "52-Week Range: " + dict.get('quoteResponse').get('result')[0].get('fiftyTwoWeekRange')
-   fifty_day_average = "50 Day average: " + str(dict.get('quoteResponse').get('result')[0].get('fiftyDayAverage'))
-   two_hundred_day_average = " 200 Day Average: " + str(dict.get('quoteResponse').get('result')[0].get('twoHundredDayAverage'))
-   eps_current_year = " EPS Current Year: " + str(dict.get('quoteResponse').get('result')[0].get('epsCurrentYear'))
-   price_eps_current_year = " Price EPS Current Year: " + str(dict.get('quoteResponse').get('result')[0].get('priceEpsCurrentYear'))
-   average_analyst_rating = " Average Analyst Rating: " + dict.get('quoteResponse').get('result')[0].get('averageAnalystRating')
+    # Initialize variables stated at beginning of function 
+    stock_symbol = dict.get('quoteResponse').get('result')[0].get('symbol')
+    company = dict.get('quoteResponse').get('result')[0].get('displayName')
+    current_stock_price = str(dict.get('quoteResponse').get('result')[0].get('regularMarketPrice'))
+    current_plus_minus = str(dict.get('quoteResponse').get('result')[0].get('regularMarketChangePercent'))
+    price_history = company + "'s Price History"
+    fifty_two_week_range = "52-Week Range: " + dict.get('quoteResponse').get('result')[0].get('fiftyTwoWeekRange')
+    fifty_day_average = "50 Day average: " + str(dict.get('quoteResponse').get('result')[0].get('fiftyDayAverage'))
+    two_hundred_day_average = " 200 Day Average: " + str(dict.get('quoteResponse').get('result')[0].get('twoHundredDayAverage'))
+    eps_current_year = " EPS Current Year: " + str(dict.get('quoteResponse').get('result')[0].get('epsCurrentYear'))
+    price_eps_current_year = " Price EPS Current Year: " + str(dict.get('quoteResponse').get('result')[0].get('priceEpsCurrentYear'))
+    average_analyst_rating = " Average Analyst Rating: " + dict.get('quoteResponse').get('result')[0].get('averageAnalystRating')
 
-   # Return html page to be rendered
-   return render_template('discover_template.html', Stock_Name=stock_symbol, Company=company, Current_Stock_Price=current_stock_price, Current_plus_minus=current_plus_minus, Price_History=price_history, Fifty_Two_Week_Range=fifty_two_week_range, Fifty_Day_Average=fifty_day_average, Two_Hundred_Day_Average=two_hundred_day_average, EPS_Current_Year=eps_current_year, Price_EPS_Current_Year=price_eps_current_year, Average_Analyst_Rating=average_analyst_rating)
+    """ Check if User is already following the stock they searched """
+    # Connect to database
+    mydb = mysql.connector.connect(
+        host="oceanus.cse.buffalo.edu",
+        user="mdlaszlo",
+        password="50265202",
+        database="cse442_2022_spring_team_q_db"
+    )
+
+    # Create cursor
+    cursor = mydb.cursor()
+
+    # Disable Foreign Key Checks (for now)
+    sql = "SET FOREIGN_KEY_CHECKS=0"
+    cursor.execute(sql)
+
+    # Get the current user from the session
+    current_user = session.get('username')
+    print("current_user = ", current_user)
+
+    # Fetch current_user's record from saved_stocks Tabke
+    sql = "SELECT stocks FROM saved_stocks WHERE username = %s"
+    cursor.execute(sql, [current_user])
+    record = cursor.fetchone()
+    print("stocks followed ->", record[0])
+    stocks_followed = record[0]
+
+    # If company_symbol is in stocks_followed
+    if(company_symbol in stocks_followed):
+
+        # Set button text to Unfollow Stock
+        button_text = "Unfollow Stock"
+
+    else:
+
+        # Set button text to Follow Stock
+        button_text = "Follow Stock"
+
+    # Re-enable Foreign Key Checks 
+    sql = "SET FOREIGN_KEY_CHECKS=1"
+    cursor.execute(sql)
+        
+    # Return html page to be rendered
+    return render_template('discover_template.html', Stock_Name=stock_symbol, Company=company, Current_Stock_Price=current_stock_price, Current_plus_minus=current_plus_minus, Price_History=price_history, Fifty_Two_Week_Range=fifty_two_week_range, Fifty_Day_Average=fifty_day_average, Two_Hundred_Day_Average=two_hundred_day_average, EPS_Current_Year=eps_current_year, Price_EPS_Current_Year=price_eps_current_year, Average_Analyst_Rating=average_analyst_rating, Follow_Button=button_text)
 
 def sanitize(str):
     count = 0
