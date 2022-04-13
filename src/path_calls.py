@@ -46,6 +46,10 @@ def login(request):
             newlogin.is_active=True
             online_users.append(newlogin)
             print(login_user(newlogin)) #set cookies to show user is logged in
+
+            # Store User username to session
+            session['username'] = username
+
             return render_template('LoginPage.html', error = "You're logged in!")
         else :
             return render_template('LoginPage.html', error = "Wrong password")
@@ -93,10 +97,28 @@ def create_account(request):
     salt = salt.decode()#encode the salt for putting into sql
     hashed_password = hashed_password.decode()
 
+    # Insert User account information into userdata Table
     sql = "INSERT INTO userdata (username, email,password,salt) VALUES (%s, %s, %s, %s)"
     val = (username, email, hashed_password, salt)
     mycursor.execute(sql, val)
     mydb.commit()
+
+    # Insert User account information into saved_stocks Table
+    sql = "SELECT * FROM userdata WHERE username = %s"
+    mycursor.execute(sql, [username])
+    user_id = mycursor.fetchone()
+    print("user_id =", user_id[0])
+
+    sql = "SET FOREIGN_KEY_CHECKS=0"
+    mycursor.execute(sql)
+
+    sql = "INSERT INTO saved_stocks (userID, username, stocks) VALUES (%s, %s, %s)"
+    val = (user_id[0], user_id[1], "")
+    mycursor.execute(sql, val)
+    mydb.commit()
+
+    sql = "SET FOREIGN_KEY_CHECKS=1"
+    mycursor.execute(sql)
 
     errorlist = "Account created!"
     return render_template('CreateAccount.html', error = errorlist)
@@ -128,44 +150,88 @@ def parse_xml():
 # list of followed stocks
 def follow():
 
-   # Connect to database
-   mydb = mysql.connector.connect(
-      host="oceanus.cse.buffalo.edu",
-      user="mdlaszlo",
-      password="50265202",
-      database="cse442_2022_spring_team_q_db"
-   )
+    # Get current stock from session
+    current_stock = session.get('searched-stock')
+    print("current_stock ->", current_stock)
 
-   # Create cursor
-   cursor = mydb.cursor()
+    # Connect to database
+    mydb = mysql.connector.connect(
+        host="oceanus.cse.buffalo.edu",
+        user="mdlaszlo",
+        password="50265202",
+        database="cse442_2022_spring_team_q_db"
+    )
 
-   # Disable Foreign Key Checks (for now)
-   sql = "SET FOREIGN_KEY_CHECKS=0"
-   cursor.execute(sql)
+    # Create cursor
+    cursor = mydb.cursor()
 
-   # Create sql command
-   sql = "INSERT INTO saved_stocks (userID, username, stocks) VALUES (%s, %s, %s)"
+    # Disable Foreign Key Checks 
+    sql = "SET FOREIGN_KEY_CHECKS=0"
+    cursor.execute(sql)
 
-   # Create values
-   vals = ("-1", "fake_user_1", "APPL, MSFT, TSLA")
+    # Get the current user from the session
+    current_user = session.get('username')
+    print("current_user = ", current_user)
 
-   # Execute command
-   cursor.execute(sql, vals)
-   mydb.commit()
+    # Fetch current_user's record from saved_stocks Tabke
+    sql = "SELECT stocks FROM saved_stocks WHERE username = %s"
+    cursor.execute(sql, [current_user])
+    record = cursor.fetchone()
+    print("stocks followed ->", record[0])
+    stocks_followed = record[0]
 
-   # Print saved_stocks information
-   cursor.execute("SELECT * FROM saved_stocks")
-   myresult = cursor.fetchall()
+    # IF stocks_followed is an empty string
+    if(stocks_followed == ""):
 
-   for x in myresult :
-      print(x)
+        # Just add stock to stocks_followed string
+        stocks_followed = stocks_followed + current_stock
 
-   # Re-enable Foreign Key Checks (for now)
-   sql = "SET FOREIGN_KEY_CHECKS=1"
-   cursor.execute(sql)
+    else:
 
-   # Render initial discover page (for now)
-   return render_template('discover.html')
+        # Split by comma to get indvidual stocks followed by User
+        stocks = stocks_followed.split(",")
+
+        # Initialize new_stock to True
+        new_stock = True
+
+        # For each entry in stocks
+        for stock in stocks:
+
+            # If stock equals current_stock
+            if(stock == current_stock):
+
+                # Set new_stock to False
+                new_stock = False
+       
+        # If new_stock is True
+        if(new_stock):
+            
+            # Add , then stock to stocks_followed string
+            stocks_followed = stocks_followed + ", " + current_stock
+
+        # Else new_stock is False, User was already following this stock
+        else:
+
+            # Remove current_stock from stocks_followed
+            stocks_followed = stocks_followed.replace((current_stock + ", "), "", 1)
+            stocks_followed = stocks_followed.replace((", " + current_stock), "", 1)
+
+    # Update saved_stock Table for User 
+    sql = "UPDATE saved_stocks SET stocks = %s WHERE username = %s"
+    val = (stocks_followed, current_user)
+    cursor.execute(sql, val)
+    mydb.commit()
+
+    # Print saved_stocks information
+    cursor.execute("SELECT * FROM saved_stocks")
+    myresult = cursor.fetchall()
+
+    # Re-enable Foreign Key Checks 
+    sql = "SET FOREIGN_KEY_CHECKS=1"
+    cursor.execute(sql)
+
+    # Render initial discover page (for now)
+    return render_template('discover.html')
 
 
 
@@ -237,61 +303,99 @@ def parse_information(name, newprice, plusminus):
 #return_discover_template_page.
 def return_discover_template_page():
 
-   """
-   Variables to be obtained from Yahoo Finance API to be displayed on web page:
-   1. Price History
-   2. Fifty_Two_Week_Range
-   3. Fifty_Day_Average
-   4. Two_Hundred_Day_Average
-   5. EPS_Current_Year
-   6. Price_EPS_Current_Year
-   7. Average_Analyst_Rating
-   8. Stock_Name -> Symbol of the stock being searched
-   9. Company
-   10. Current_Stock_Price
-   11. Current_plus_minus
-   """
+    """
+    Variables to be obtained from Yahoo Finance API to be displayed on web page:
+    1. Price History
+    2. Fifty_Two_Week_Range
+    3. Fifty_Day_Average
+    4. Two_Hundred_Day_Average
+    5. EPS_Current_Year
+    6. Price_EPS_Current_Year
+    7. Average_Analyst_Rating
+    8. Stock_Name -> Symbol of the stock being searched
+    9. Company
+    10. Current_Stock_Price
+    11. Current_plus_minus
+    """
 
-   # Get the company sybmol user is looking for
-   company_symbol = request.form.get('stock')
-   print(company_symbol)
+    # Get the company sybmol user is looking for
+    company_symbol = request.form.get('stock')
+    print(company_symbol)
 
-   # Create url for Yahoo Finace API
-   url = "https://yfapi.net/v6/finance/quote"
+    # Create url for Yahoo Finace API
+    url = "https://yfapi.net/v6/finance/quote"
 
-   # Create querystring to find company stock info
-   querystring = {"symbols":company_symbol}
+    # Create querystring to find company stock info
+    querystring = {"symbols":company_symbol}
    
-   # Create headers dictionary with API Key
-   headers = {
-      'x-api-key': "REiSqBThOa9z6bIgDGJ2l4S92jMKXl8O1yRsROBK"
-   }
+    # Create headers dictionary with API Key
+    headers = {
+        'x-api-key': "REiSqBThOa9z6bIgDGJ2l4S92jMKXl8O1yRsROBK"
+    }
 
-   # Send request to Yahoo Finance API and store response
-   response = requests.request("GET", url, headers=headers, params=querystring)
+    # Send request to Yahoo Finance API and store response
+    response = requests.request("GET", url, headers=headers, params=querystring)
 
-   # Load response as a dictionary
-   dict = json.loads(response.text)
+    # Load response as a dictionary
+    dict = json.loads(response.text)
 
-   # Initialize variables stated at beginning of function 
-   stock_symbol = dict.get('quoteResponse').get('result')[0].get('symbol')
-   company = dict.get('quoteResponse').get('result')[0].get('displayName')
-   current_stock_price = str(dict.get('quoteResponse').get('result')[0].get('regularMarketPrice'))
-   current_plus_minus = str(dict.get('quoteResponse').get('result')[0].get('regularMarketChangePercent'))
-   price_history = company + "'s Price History"
-   fifty_two_week_range = "52-Week Range: " + dict.get('quoteResponse').get('result')[0].get('fiftyTwoWeekRange')
-   fifty_day_average = "50 Day average: " + str(dict.get('quoteResponse').get('result')[0].get('fiftyDayAverage'))
-   two_hundred_day_average = " 200 Day Average: " + str(dict.get('quoteResponse').get('result')[0].get('twoHundredDayAverage'))
-   eps_current_year = " EPS Current Year: " + str(dict.get('quoteResponse').get('result')[0].get('epsCurrentYear'))
-   price_eps_current_year = " Price EPS Current Year: " + str(dict.get('quoteResponse').get('result')[0].get('priceEpsCurrentYear'))
-   average_analyst_rating = " Average Analyst Rating: " + dict.get('quoteResponse').get('result')[0].get('averageAnalystRating')
-   
-    #send notification email and discord
-   parse_information(company, current_stock_price, current_plus_minus)
-   discord_notity(str(company)+" price change to: "+current_stock_price+" changed by: "+current_plus_minus)
+    # Initialize variables stated at beginning of function 
+    stock_symbol = dict.get('quoteResponse').get('result')[0].get('symbol')
+    company = dict.get('quoteResponse').get('result')[0].get('displayName')
+    current_stock_price = str(dict.get('quoteResponse').get('result')[0].get('regularMarketPrice'))
+    current_plus_minus = str(dict.get('quoteResponse').get('result')[0].get('regularMarketChangePercent'))
+    price_history = company + "'s Price History"
+    fifty_two_week_range = "52-Week Range: " + dict.get('quoteResponse').get('result')[0].get('fiftyTwoWeekRange')
+    fifty_day_average = "50 Day average: " + str(dict.get('quoteResponse').get('result')[0].get('fiftyDayAverage'))
+    two_hundred_day_average = " 200 Day Average: " + str(dict.get('quoteResponse').get('result')[0].get('twoHundredDayAverage'))
+    eps_current_year = " EPS Current Year: " + str(dict.get('quoteResponse').get('result')[0].get('epsCurrentYear'))
+    price_eps_current_year = " Price EPS Current Year: " + str(dict.get('quoteResponse').get('result')[0].get('priceEpsCurrentYear'))
+    average_analyst_rating = " Average Analyst Rating: " + dict.get('quoteResponse').get('result')[0].get('averageAnalystRating')
 
-   # Return html page to be rendered
-   return render_template('discover_template.html', Stock_Name=stock_symbol, Company=company, Current_Stock_Price=current_stock_price, Current_plus_minus=current_plus_minus, Price_History=price_history, Fifty_Two_Week_Range=fifty_two_week_range, Fifty_Day_Average=fifty_day_average, Two_Hundred_Day_Average=two_hundred_day_average, EPS_Current_Year=eps_current_year, Price_EPS_Current_Year=price_eps_current_year, Average_Analyst_Rating=average_analyst_rating)
+    """ Check if User is already following the stock they searched """
+    # Connect to database
+    mydb = mysql.connector.connect(
+        host="oceanus.cse.buffalo.edu",
+        user="mdlaszlo",
+        password="50265202",
+        database="cse442_2022_spring_team_q_db"
+    )
+
+    # Create cursor
+    cursor = mydb.cursor()
+
+    # Disable Foreign Key Checks (for now)
+    sql = "SET FOREIGN_KEY_CHECKS=0"
+    cursor.execute(sql)
+
+    # Get the current user from the session
+    current_user = session.get('username')
+    print("current_user = ", current_user)
+
+    # Fetch current_user's record from saved_stocks Tabke
+    sql = "SELECT stocks FROM saved_stocks WHERE username = %s"
+    cursor.execute(sql, [current_user])
+    record = cursor.fetchone()
+    print("stocks followed ->", record[0])
+    stocks_followed = record[0]
+
+    # If company_symbol is in stocks_followed
+    if(company_symbol in stocks_followed):
+
+        # Set button text to Unfollow Stock
+        button_text = "Unfollow Stock"
+
+    else:
+
+        # Set button text to Follow Stock
+        button_text = "Follow Stock"
+
+    # Re-enable Foreign Key Checks 
+    sql = "SET FOREIGN_KEY_CHECKS=1"
+    cursor.execute(sql)
+        
+    # Return html page to be rendered
+    return render_template('discover_template.html', Stock_Name=stock_symbol, Company=company, Current_Stock_Price=current_stock_price, Current_plus_minus=current_plus_minus, Price_History=price_history, Fifty_Two_Week_Range=fifty_two_week_range, Fifty_Day_Average=fifty_day_average, Two_Hundred_Day_Average=two_hundred_day_average, EPS_Current_Year=eps_current_year, Price_EPS_Current_Year=price_eps_current_year, Average_Analyst_Rating=average_analyst_rating, Follow_Button=button_text)
 
 def sanitize(str):
     count = 0
