@@ -56,11 +56,15 @@ def return_news():
    xml = path_calls.parse_xml()
    filtered_xml = []
    #username = session.get('username')
-   #user_stocks = path_calls.get_user_stocks(username)[0]
+   username = "fakeuser"
+   user_stocks = path_calls.get_user_stocks(username)
+   print(user_stocks)
    for title, link in xml:
       lower = title.lower()
-      if "paypal" in lower or "dwac" in lower:
-         filtered_xml.append((title, link))
+      for stock in user_stocks:
+         ticker = path_calls.ticker_to_stock_name(stock)
+         if stock in lower or ticker in lower:
+            filtered_xml.append((title, link))
    print(filtered_xml)
    return render_template('news.html', title=filtered_xml)
 
@@ -304,14 +308,11 @@ def get_news():
 
 @login_manager.user_loader
 def user_loader(user_id):
-   print("TEST?")
-   print(path_calls.online_users)
    value = int(user_id)
    for x in path_calls.online_users :
       if x.id == value:
          print(x)
          return x
-   print("not found")
    return DS.User()
 
 if __name__ == '__main__':
