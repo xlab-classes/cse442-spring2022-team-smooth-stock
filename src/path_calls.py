@@ -189,7 +189,7 @@ def follow():
     else:
 
         # Split by comma to get indvidual stocks followed by User
-        stocks = stocks_followed.split(",")
+        stocks = stocks_followed.split(", ")
 
         # Initialize new_stock to True
         new_stock = True
