@@ -8,8 +8,6 @@ from bs4 import BeautifulSoup
 import requests
 import mysql.connector
 import json
-import smtplib
-from discord import SyncWebhook
 
 online_users = []
 
@@ -189,13 +187,16 @@ def follow():
     else:
 
         # Split by comma to get indvidual stocks followed by User
-        stocks = stocks_followed.split(",")
+        stocks = stocks_followed.split(", ")
 
         # Initialize new_stock to True
         new_stock = True
 
         # For each entry in stocks
         for stock in stocks:
+
+            # Ensure stock is in all caps
+            stock = str.upper(stock)
 
             # If stock equals current_stock
             if(stock == current_stock):
@@ -232,73 +233,6 @@ def follow():
 
     # Render initial discover page (for now)
     return render_template('discover.html')
-
-
-
-def discord_notity(message):
-   url = "https://discord.com/api/webhooks/950491418491752448/ZKjXE4laBmFGZxbls5cpZhZ3lbqiO8DXR6S9UweEQ_uowDXeh2kBmnflT9nQh6sJq47K"
-   webhook = SyncWebhook.from_url(url)
-   webhook.send(message)
-
-
-#send the email to user message being what you want to say
-def email(sender_to, message):
-   gmail_user = 'smoothstocks1@gmail.com'
-   gmail_password =  '!qazxsw23'
-   # email_text = """\
-   # From: %s
-   # To: %s
-   # Subject: %s
-
-   # %s
-   # """ % (gmail_user, ", ".join(to), "stocks", email_message)
-
-   try:
-      smtp_server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-      smtp_server.ehlo()
-      smtp_server.login(gmail_user, gmail_password)
-      smtp_server.sendmail(gmail_user, sender_to, message)
-      smtp_server.close()
-      print ("Email sent successfully!")
-   except Exception as ex:
-      print ("Something went wrong….",ex)
-
-#helperfunction for notifcation
-def where(stock, name, username,cursor, newprice, plusminus):
-   if stock == name:
-      cursor.execute("SELECT email, username FROM userdata")
-      myresults = cursor.fetchall()
-
-      for s in myresults:
-         print(s[1])
-         if username==s[1]:
-            print(s[0])
-            email(s[0], stock+" price change!\n"+"New price: "+str(newprice)+"\n"+"Change By: "+str(plusminus))
-            return True
-   return False
-
-#parse database for users email 
-def parse_information(name, newprice, plusminus):
-   mydb = mysql.connector.connect(
-         host="oceanus.cse.buffalo.edu",
-         user="dtan2",
-         password="50278774",
-         database="cse442_2022_spring_team_q_db"
-      )
-   cursor = mydb.cursor()
-
-   cursor.execute("SELECT username, stocks FROM saved_stocks")
-   myresult = cursor.fetchall()
-
-   for x in myresult:
-      arr_stock = x[1].split(", ")
-      username = x[0]
-      for stock in arr_stock:
-          if where(stock, name, username, cursor, newprice, plusminus):
-            break
-
-
-
 
 #return_discover_template_page.
 def return_discover_template_page():
@@ -426,6 +360,4 @@ def obtain_price(ticker):
     str_build = str(build)
     price_str = str_build[7:len(str_build) - 1]
     return price_str
-
-
 

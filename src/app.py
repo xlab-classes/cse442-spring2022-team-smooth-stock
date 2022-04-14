@@ -9,8 +9,6 @@ import requests
 import json
 import smtplib
 import time
-from discord import SyncWebhook
-
 
 
 t_dir = os.path.abspath('../html')
@@ -124,12 +122,6 @@ def parse_information(name, newprice, plusminus):
    # cursor.execute("SELECT username, email FROM userdata")
 
 
-def discord_notity(message):
-   url = "https://discord.com/api/webhooks/950491418491752448/ZKjXE4laBmFGZxbls5cpZhZ3lbqiO8DXR6S9UweEQ_uowDXeh2kBmnflT9nQh6sJq47K"
-   webhook = SyncWebhook.from_url(url)
-   webhook.send(message)
-
-
 @app.route('/notify', methods=['GET','POST'])
 @login_required
 def return_notify_page():
@@ -156,52 +148,17 @@ def logout():
    logout_user()
    return render_template('LoginPage.html')
 
-@app.before_first_request
-def create_tables():
-    database.create_all()
-
 @app.route('/follow')
 @login_required
 def follow():
    return(path_calls.follow())
-   
-   # Create headers dictionary with API Key
-   headers = {
-      'x-api-key': "REiSqBThOa9z6bIgDGJ2l4S92jMKXl8O1yRsROBK"
-   }
-
-   # Send request to Yahoo Finance API and store response
-   response = requests.request("GET", url, headers=headers, params=querystring)
-
-   # Load response as a dictionary
-   dict = json.loads(response.text)
-
-   # Initialize variables stated at beginning of function 
-   stock_symbol = dict.get('quoteResponse').get('result')[0].get('symbol')
-   company = dict.get('quoteResponse').get('result')[0].get('displayName')
-   current_stock_price = str(dict.get('quoteResponse').get('result')[0].get('regularMarketPrice'))
-   current_plus_minus = str(dict.get('quoteResponse').get('result')[0].get('regularMarketChangePercent'))
-   price_history = company + "'s Price History"
-   fifty_two_week_range = "52-Week Range: " + dict.get('quoteResponse').get('result')[0].get('fiftyTwoWeekRange')
-   fifty_day_average = "50 Day average: " + str(dict.get('quoteResponse').get('result')[0].get('fiftyDayAverage'))
-   two_hundred_day_average = " 200 Day Average: " + str(dict.get('quoteResponse').get('result')[0].get('twoHundredDayAverage'))
-   eps_current_year = " EPS Current Year: " + str(dict.get('quoteResponse').get('result')[0].get('epsCurrentYear'))
-   price_eps_current_year = " Price EPS Current Year: " + str(dict.get('quoteResponse').get('result')[0].get('priceEpsCurrentYear'))
-   average_analyst_rating = " Average Analyst Rating: " + dict.get('quoteResponse').get('result')[0].get('averageAnalystRating')
-
-   #send notification email and discord
-   parse_information(company, current_stock_price, current_plus_minus)
-   discord_notity(str(company)+" price change to: "+current_stock_price+" changed by: "+current_plus_minus)
-   
-   # Return html page to be rendered
-   return render_template('discover_template.html', Stock_Name=stock_symbol, Company=company, Current_Stock_Price=current_stock_price, Current_plus_minus=current_plus_minus, Price_History=price_history, Fifty_Two_Week_Range=fifty_two_week_range, Fifty_Day_Average=fifty_day_average, Two_Hundred_Day_Average=two_hundred_day_average, EPS_Current_Year=eps_current_year, Price_EPS_Current_Year=price_eps_current_year, Average_Analyst_Rating=average_analyst_rating)
 
 
 @app.route('/find-stock', methods=["POST"])
 #@login_required
 def return_discover_template_page():
    # Add searched stock to the session
-   session['searched-stock'] = request.form.get('stock')
+   session['searched-stock'] = str.upper(request.form.get('stock'))
    return(path_calls.return_discover_template_page())
    
 @app.route('/442')
