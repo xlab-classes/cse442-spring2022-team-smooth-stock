@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, session
 from flask_login import login_user
-import bcrypt
+import hashlib
 from app import DS
-from app import mydb
+from app import mydb, os
 from bs4 import BeautifulSoup
 import requests
 
@@ -28,10 +28,9 @@ def login(request):
         errorlist += "User not found.\n"
         return render_template('LoginPage.html', error = errorlist)
     else :
-        salt = user[4] #4 is salt
-        salt = salt.encode()
-        hashed_password = bcrypt.hashpw(password.encode(), salt)
-        realpassword = user[3].encode() #3 is password
+        salt = user[4].encode('latin1') #4 is salt
+        hashed_password = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, 10000).hex()
+        realpassword = user[3] #3 is password
 
         if realpassword == hashed_password :
 
@@ -80,16 +79,14 @@ def create_account(request):
         errorlist = "Error" + errorlist + "."
         return render_template('CreateAccount.html', error = errorlist)
 
-    salt = bcrypt.gensalt()
+    salt = os.urandom(32)
     print("Salt",salt)
-    hashed_password = bcrypt.hashpw(password.encode(), salt)
+    hashed_password = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, 10000).hex()
     print("Hashed_pass",hashed_password)
 
-    salt = salt.decode()#encode the salt for putting into sql
-    hashed_password = hashed_password.decode()
 
     sql = "INSERT INTO userdata (username, email,password,salt) VALUES (%s, %s, %s, %s)"
-    val = (username, email, hashed_password, salt)
+    val = (username, email, hashed_password, salt.decode('latin1'))
     mycursor.execute(sql, val)
     mydb.commit()
 
