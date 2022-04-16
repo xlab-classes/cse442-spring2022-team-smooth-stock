@@ -56,21 +56,6 @@ def sanitize(str):
         store = a + "0"
         return store
     return a
-def obtain_price(ticker):
-    url = "https://yfapi.net/v6/finance/quote"
-    query_string_msg = ticker + ",EURUSD=X"
-    querystring = {"symbols": ""}
-    querystring["symbols"] = query_string_msg
-    headers = {
-        'x-api-key': "hlb79LxeLF55X2SoJI0wA3UJSrpuB5ML89Ap8lK7"
-    }
-    response = requests.request("GET", url, headers=headers, params=querystring)
-    response_as_bit_string = response.content
-    int = response_as_bit_string.find(b'ask')
-    build = b''
-    for i in range(int, int + 11):
-        build += response_as_bit_string[i:i + 1]
-
 
 
 
@@ -164,7 +149,6 @@ def obtain(ticker):
     numerator = i_price - i_open
     res = (numerator)/i_open
     res1 = res*100
-    print("this is the percent change", res1)
     res2 = str(res1)
     res3 = res2[0:6]
     res4 = res3 + "%"
