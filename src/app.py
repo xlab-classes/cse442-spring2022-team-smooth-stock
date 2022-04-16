@@ -1,8 +1,8 @@
 from re import L
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, session,url_for, redirect
 from flask_login import LoginManager, UserMixin, login_required, current_user, login_user, logout_user
-from flask_sqlalchemy import SQLAlchemy
 from mysql.connector import connect, Error
+from flask_mail import Mail, Message
 import mysql.connector
 import os
 import requests
@@ -15,14 +15,24 @@ t_dir = os.path.abspath('../html')
 app = Flask(__name__, template_folder=t_dir)
 
 ##Temp database code for SQLalchemy, will need to be changed later for the server SQL
-database = SQLAlchemy(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.sqlite3'
+
 app.config['SECRET_KEY']   = "tempkey123321"
-database.init_app(app)
+
 
 login_manager = LoginManager()
 login_manager.login_view = 'login_needed'
 login_manager.init_app(app)
+
+#create mail object
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_USERNAME'] = 'SmoothStocksApp@gmail.com'
+app.config['MAIL_PASSWORD'] = 'Twisted7Seven7'
+app.config['MAIL_DEFAULT_SENDER'] = 'SmoothStocksApp@gmail.com'
+
+mail = Mail(app)
+
 
 mydb = mysql.connector.connect(
    host="oceanus.cse.buffalo.edu",
@@ -34,6 +44,33 @@ mydb = mysql.connector.connect(
 
 import data_structures as DS
 import path_calls
+import email_path
+
+def sanitize(str):
+    count = 0
+    a = str.replace(",", "")
+    idx = a.find(".")
+    for i in range(idx, len(a) - 1):
+        count += 1
+    if count < 2 :
+        store = a + "0"
+        return store
+    return a
+def obtain_price(ticker):
+    url = "https://yfapi.net/v6/finance/quote"
+    query_string_msg = ticker + ",EURUSD=X"
+    querystring = {"symbols": ""}
+    querystring["symbols"] = query_string_msg
+    headers = {
+        'x-api-key': "hlb79LxeLF55X2SoJI0wA3UJSrpuB5ML89Ap8lK7"
+    }
+    response = requests.request("GET", url, headers=headers, params=querystring)
+    response_as_bit_string = response.content
+    int = response_as_bit_string.find(b'ask')
+    build = b''
+    for i in range(int, int + 11):
+        build += response_as_bit_string[i:i + 1]
+
 
 
 
@@ -219,6 +256,7 @@ def logout():
    logout_user()
    return render_template('LoginPage.html')
 
+
 @app.route('/follow')
 @login_required
 def follow():
@@ -289,7 +327,19 @@ def return_support_page():
     return render_template('support.html', generate_table=table_head)
 
 
-# test
+
+#new path for confirming a email token
+@app.route('/reset/<token>', methods=["GET", "POST"])
+def token_reset(token):
+    return email_path.token_reset(token)
+
+
+
+@app.route('/reset', methods=["GET", "POST"])
+def reset_email():
+    return email_path.reset_email()
+
+
 @app.route('/test_login')
 @login_required
 def test_login():
