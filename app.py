@@ -1,18 +1,16 @@
-from re import L
-from flask import Flask, render_template, request, session,url_for, redirect
-from flask_login import LoginManager, UserMixin, login_required, current_user, login_user, logout_user
-from mysql.connector import connect, Error
-from flask_mail import Mail, Message
+from flask import Flask, render_template, request, session
+from flask_login import LoginManager, login_required, logout_user
+from mysql.connector import connect
+from flask_mail import Mail
 import mysql.connector
 import os
 import requests
-import json
 import smtplib
 import time
 
 
-t_dir = os.path.abspath('../html')
-app = Flask(__name__, template_folder=t_dir)
+t_dir = os.path.abspath('html')
+app = Flask(__name__, template_folder='html')
 
 ##Temp database code for SQLalchemy, will need to be changed later for the server SQL
 
