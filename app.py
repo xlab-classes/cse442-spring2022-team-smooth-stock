@@ -315,7 +315,7 @@ def return_support_page():
     ret_list = []
     for i in range(len(stocks_followed)):
         cur = obtain(stocks_followed[i])
-        ret_list.insert(len(ret_list, cur))
+        ret_list.insert(len(ret_list), cur)
     for i in range(len(ret_list)):
         s_name = ret_list[i][0]
         s_price = ret_list[i][1]
