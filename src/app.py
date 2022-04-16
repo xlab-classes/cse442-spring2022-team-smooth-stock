@@ -65,6 +65,77 @@ def create_account() :
 def return_landing_page():
    return render_template('LandingPage.html')
 
+def obtain(ticker):
+
+    url = "https://yfapi.net/v6/finance/quote"
+    query_string_msg = ticker + ",EURUSD=X"
+    querystring = {"symbols": ""}
+    querystring["symbols"] = query_string_msg
+    headers = {
+        'x-api-key': "hlb79LxeLF55X2SoJI0wA3UJSrpuB5ML89Ap8lK7"
+    }
+    response = requests.request("GET", url, headers=headers, params=querystring)
+    response_as_bit_string = response.content
+    res_utf = response_as_bit_string.decode('utf8')
+
+    #build the price of the stock
+    ask = "ask"
+    idx_ask = res_utf.find(ask)
+    build_price = ""
+    counter = idx_ask
+    while(res_utf[counter:counter+1] != ","):
+        build_price += res_utf[counter:counter+1]
+        counter+=1
+    
+
+    # "regularMarketOpen":170.62
+    idx_regular_market_open = res_utf.find("regularMarketOpen")
+    build_open_market_price = ""
+    counter1 = idx_regular_market_open
+    while(res_utf[counter1:counter1+1]!= ","):
+        build_open_market_price += res_utf[counter1:counter1+1]
+        counter1+=1
+    
+
+    #buildthe display name
+    idx_display_name = res_utf.find("displayName")
+    build_display_name = ""
+    counter2 = idx_display_name
+    while(res_utf[counter2:counter2+1]!= ","):
+        build_display_name+= res_utf[counter2:counter2+1]
+        counter2+=1
+  
+
+    temp = build_price.split(":")
+    price = temp[1]
+    temp1 = build_open_market_price.split(":")
+    open = temp1[1]
+    temp2 = build_display_name.split(":")
+    name = temp2[1]
+    namefinal = name.replace('"', "")
+  
+
+    ret = []
+    ret.insert(0, namefinal)
+    ret.insert(1, price)
+
+
+    #calculate price change from opening price to current price
+    i_price = float(price)
+    i_open = float(open)
+    numerator = i_price - i_open
+    res = (numerator)/i_open
+    res1 = res*100
+    print("this is the percent change", res1)
+    res2 = str(res1)
+    res3 = res2[0:6]
+    res4 = res3 + "%"
+ 
+    ret.insert(2, res4)
+
+    #res4 is the percent change, #namefinal is the final name, #price is the current price of the stock
+
+    return ret
 
 def email(sender_to, message):
    gmail_user = 'smoothstocks1@gmail.com'
@@ -171,19 +242,49 @@ def return_442_page():
 # hlb79LxeLF55X2SoJI0wA3UJSrpuB5ML89Ap8lK7
 @app.route('/support')
 def return_support_page():
+      
     table_head = "<tr id = 'joe'><div class = 'na'><th>Stock Name</th><th>Stock Price</th><th>Loss / Gain</th></div></tr>"
-    ###########------------------------------##################################
-    #retreive from a DB (auto build)
-    user_stock_list=["AAPL","NVDA","GOOG","GME"]
-    prices = []
-    for i in range(len(user_stock_list)):
-        cur = path_calls.obtain_price(user_stock_list[i])
-        sanitized = path_calls.sanitize(cur)
-        prices.insert(len(prices), sanitized)
-    for i in range(len(user_stock_list)):
-        s_name = user_stock_list[i]
-        s_price = prices[i]
-        txt1 = "<tr><td>{stock_name}</td><td>{stock_price}</td><td>{to_decide}</td></tr>".format(stock_name = s_name ,stock_price = s_price, to_decide = 1)
+
+    # Get current stock from session
+    current_stock = session.get('searched-stock')
+    print("current_stock ->", current_stock)
+
+    # Connect to database
+    mydb = mysql.connector.connect(
+        host="oceanus.cse.buffalo.edu",
+        user="mdlaszlo",
+        password="50265202",
+        database="cse442_2022_spring_team_q_db"
+    )
+
+    # Create cursor
+    cursor = mydb.cursor()
+
+    # Disable Foreign Key Checks
+    sql = "SET FOREIGN_KEY_CHECKS=0"
+    cursor.execute(sql)
+
+    # Get the current user from the session
+    current_user = session.get('username')
+    print("current_user = ", current_user)
+
+    # Fetch current_user's record from saved_stocks Tabke
+    sql = "SELECT stocks FROM saved_stocks WHERE username = %s"
+    cursor.execute(sql, [current_user])
+    record = cursor.fetchone()
+    print("stocks followed ->", record[0])
+    stocks_followed = record[0]
+
+
+    ret_list = []
+    for i in range(len(stocks_followed)):
+        cur = obtain(stocks_followed[i])
+        ret_list.insert(len(ret_list, cur))
+    for i in range(len(ret_list)):
+        s_name = ret_list[i][0]
+        s_price = ret_list[i][1]
+        percent = ret_list[i][2]
+        txt1 = "<tr><td>{stock_name}</td><td>{stock_price}</td><td>{to_decide}</td></tr>".format(stock_name= s_name,  stock_price= s_price, to_decide= percent)
         table_head += txt1
     return render_template('support.html', generate_table=table_head)
 
