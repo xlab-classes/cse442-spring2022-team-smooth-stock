@@ -114,6 +114,7 @@ def obtain(ticker):
     response = requests.request("GET", url, headers=headers, params=querystring)
     response_as_bit_string = response.content
     res_utf = response_as_bit_string.decode('utf8')
+    res_utf = res_utf.replace("askSize", "aakSize")
 
     #build the price of the stock
     ask = "ask"
