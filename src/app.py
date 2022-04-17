@@ -10,8 +10,8 @@ import json
 import smtplib
 import time
 # import io
-# import discord
-# from discord import Webhook, RequestsWebhookAdapter
+import discord
+from discord import Webhook, RequestsWebhookAdapter # Importing discord.Webhook and discord.RequestsWebhookAdapter
 
 
 
@@ -141,7 +141,6 @@ def obtain(ticker):
     name = temp2[1]
     namefinal = name.replace('"', "")
   
-
     ret = []
     ret.insert(0, namefinal)
     ret.insert(1, price)
@@ -156,7 +155,8 @@ def obtain(ticker):
     res2 = str(res1)
     res3 = res2[0:6]
     res4 = res3 + "%"
- 
+    parse_information(name,i_price, res4)
+
     ret.insert(2, res4)
 
     #res4 is the percent change, #namefinal is the final name, #price is the current price of the stock
@@ -195,7 +195,7 @@ def where(stock, name, username,cursor, newprice, plusminus):
          if username==s[1]:
             print(s[0])
             email(s[0], stock+" price change!\n"+"New price: "+str(newprice)+"\n"+"Change By: "+str(plusminus))
-            #discord_notity(stock+" price change!\n"+"New price: "+str(newprice)+"\n"+"Change By: "+str(plusminus))
+            discord_notity(stock+" price change!\n"+"New price: "+str(newprice)+"\n"+"Change By: "+str(plusminus))
             return True
    return False
 
@@ -220,17 +220,20 @@ def parse_information(name, newprice, plusminus):
    # cursor.execute("SELECT username, email FROM userdata")
 
 
+
 def discord_notity(message):
-   url = "https://discord.com/api/webhooks/950491418491752448/ZKjXE4laBmFGZxbls5cpZhZ3lbqiO8DXR6S9UweEQ_uowDXeh2kBmnflT9nQh6sJq47K"
-   #webhook = discord.SyncWebhook.from_url(url)
-   #webhook.send(message)
+    url = "https://discord.com/api/webhooks/950491418491752448/ZKjXE4laBmFGZxbls5cpZhZ3lbqiO8DXR6S9UweEQ_uowDXeh2kBmnflT9nQh6sJq47K"
+    webhook = Webhook.from_url(url, adapter=RequestsWebhookAdapter()) # Initializing webhook
+    webhook.send(content=message) # Executing webhook.
+
+
+#discord_notity("test")
 
 
 @app.route('/notify', methods=['GET','POST'])
 @login_required
 def return_notify_page():
 
-   parse_information("APPL", 170, 10)
 
    if request.method == 'POST':
       to = request.form["newemail"]
