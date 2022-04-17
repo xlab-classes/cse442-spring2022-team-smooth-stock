@@ -353,7 +353,7 @@ def return_tech1_page():
 def return_energy1_page():
     table_head = "<tr id = 'joe'><div class = 'na'><th>Stock Name</th><th>Stock Price</th><th>Loss / Gain</th></div></tr>"
 
-    stocks_followed = ["MPC", "DINO", "FANG", "CNP"]
+    stocks_followed = ["MPC", "CLR", "FANG", "CNP"]
     ret_list = []
     for i in range(len(stocks_followed)):
         cur = obtain(stocks_followed[i])
