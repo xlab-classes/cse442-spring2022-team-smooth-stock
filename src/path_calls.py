@@ -33,7 +33,7 @@ def login(request):
         return render_template('LoginPage.html', error = errorlist)
     else :
         salt = user[4].encode('latin1') #4 is salt
-        hashed_password = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, 10000).hex()
+        hashed_password = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, 10000).decode('latin1')
         realpassword = user[3] #3 is password
 
         if realpassword == hashed_password :
@@ -89,7 +89,7 @@ def create_account(request):
 
     salt = os.urandom(32)
     print("Salt",salt)
-    hashed_password = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, 10000).hex()
+    hashed_password = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, 10000).decode('latin1')
     print("Hashed_pass",hashed_password)
 
 
