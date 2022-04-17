@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="4">
+ <title>442 title page</title>
+
+
+<style>
+div#topbar {
+
+width:100%;
+margin:auto;
+border:15px groove #CCCC99;
+background-color:blue;
+text-align:center;
+}
+
+#thistab{
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+
+}
+
+table, th, td {
+  border: 2px solid black;
+}
+div.na {
+color: red;
+}
+tr#joe {
+color: blue;
+}
+button#testing {
+color: red;
+}
+
+<!--  div. is for class div# is for id     -->
+</style>
+
+<script
+  src="https://code.jquery.com/jquery-migrate-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous">
+  function AutoRefresh( t ) {
+      setTimeout("location.reload(true);", t);
+  }
+ </script>
+
+<script>
+function loadDoc() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+     document.getElementById("thistab").innerHTML = this.responseText;
+    }
+  };
+  xhttp.open("GET", "support.html", true);
+  xhttp.send();
+
+
+
+}
+
+</script>
+
+
+
+<!--       -->
+</head>
+<body >
+
+<div id = "topbar">
+
+  <a href="CreateAccount"><button>Create Account</button></a>
+  <a href="442"><button>Landing Page</button></a>
+  <a href="news"><button>News</button></a>
+  <a href="notify"><button>Notifications</button></a>
+  <a href="discover"><button>Discover</button></a>
+  <a href="logout"><button>Logout</button></a>
+
+
+</div>
+
+<table id = "thistab">
+ {{ generate_table|safe }}
+</table>
+
+
+
+
+<!--               --->
+
+
+
+</body>
+</html>
