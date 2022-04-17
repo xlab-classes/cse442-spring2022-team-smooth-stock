@@ -9,7 +9,9 @@ import requests
 import json
 import smtplib
 import time
-from discord import SyncWebhook
+# import io
+# import discord
+# from discord import Webhook, RequestsWebhookAdapter
 
 
 
@@ -100,6 +102,7 @@ def where(stock, name, username,cursor, newprice, plusminus):
          if username==s[1]:
             print(s[0])
             email(s[0], stock+" price change!\n"+"New price: "+str(newprice)+"\n"+"Change By: "+str(plusminus))
+            #discord_notity(stock+" price change!\n"+"New price: "+str(newprice)+"\n"+"Change By: "+str(plusminus))
             return True
    return False
 
@@ -126,17 +129,15 @@ def parse_information(name, newprice, plusminus):
 
 def discord_notity(message):
    url = "https://discord.com/api/webhooks/950491418491752448/ZKjXE4laBmFGZxbls5cpZhZ3lbqiO8DXR6S9UweEQ_uowDXeh2kBmnflT9nQh6sJq47K"
-   webhook = SyncWebhook.from_url(url)
-   webhook.send(message)
+   #webhook = discord.SyncWebhook.from_url(url)
+   #webhook.send(message)
 
 
 @app.route('/notify', methods=['GET','POST'])
 @login_required
 def return_notify_page():
 
-   
-
-   #parse_information("APPL", 170, 10)
+   parse_information("APPL", 170, 10)
 
    if request.method == 'POST':
       to = request.form["newemail"]

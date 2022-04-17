@@ -9,7 +9,7 @@ import requests
 import mysql.connector
 import json
 import smtplib
-from discord import SyncWebhook
+#from discord import SyncWebhook
 
 online_users = []
 
@@ -288,7 +288,7 @@ def return_discover_template_page():
    
     #send notification email and discord
    parse_information(company, current_stock_price, current_plus_minus)
-   discord_notity(str(company)+" price change to: "+current_stock_price+" changed by: "+current_plus_minus)
+   #discord_notity(str(company)+" price change to: "+current_stock_price+" changed by: "+current_plus_minus)
 
    # Return html page to be rendered
    return render_template('discover_template.html', Stock_Name=stock_symbol, Company=company, Current_Stock_Price=current_stock_price, Current_plus_minus=current_plus_minus, Price_History=price_history, Fifty_Two_Week_Range=fifty_two_week_range, Fifty_Day_Average=fifty_day_average, Two_Hundred_Day_Average=two_hundred_day_average, EPS_Current_Year=eps_current_year, Price_EPS_Current_Year=price_eps_current_year, Average_Analyst_Rating=average_analyst_rating)
