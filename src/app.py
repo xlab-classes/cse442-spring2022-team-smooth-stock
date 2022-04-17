@@ -312,6 +312,65 @@ def return_support_page():
     return render_template('support.html', generate_table=table_head)
 
 
+@app.route('/tech1')
+def return_tech1_page():
+    table_head = "<tr id = 'joe'><div class = 'na'><th>Stock Name</th><th>Stock Price</th><th>Loss / Gain</th></div></tr>"
+
+    stocks_followed = ["GOOG", "AAPL", "NVDA", "SWCH"]
+    ret_list = []
+    for i in range(len(stocks_followed)):
+        cur = obtain(stocks_followed[i])
+        ret_list.insert(len(ret_list), cur)
+    for i in range(len(ret_list)):
+        s_name = ret_list[i][0]
+        s_price = ret_list[i][1]
+        percent = ret_list[i][2]
+        txt1 = "<tr><td>{stock_name}</td><td>{stock_price}</td><td>{to_decide}</td></tr>".format(stock_name=s_name,
+                                                                                                 stock_price=s_price,
+                                                                                                 to_decide=percent)
+        table_head += txt1
+    return render_template('tech1.html', generate_table=table_head)
+
+
+@app.route('/energy1')
+def return_energy1_page():
+    table_head = "<tr id = 'joe'><div class = 'na'><th>Stock Name</th><th>Stock Price</th><th>Loss / Gain</th></div></tr>"
+
+    stocks_followed = ["MPC", "DINO", "FANG", "CNP"]
+    ret_list = []
+    for i in range(len(stocks_followed)):
+        cur = obtain(stocks_followed[i])
+        ret_list.insert(len(ret_list), cur)
+    for i in range(len(ret_list)):
+        s_name = ret_list[i][0]
+        s_price = ret_list[i][1]
+        percent = ret_list[i][2]
+        txt1 = "<tr><td>{stock_name}</td><td>{stock_price}</td><td>{to_decide}</td></tr>".format(stock_name=s_name,
+                                                                                                 stock_price=s_price,
+                                                                                                 to_decide=percent)
+        table_head += txt1
+    return render_template('energy1.html', generate_table=table_head)
+
+
+
+@app.route('/telecom1')
+def return_telecom1_page():
+    table_head = "<tr id = 'joe'><div class = 'na'><th>Stock Name</th><th>Stock Price</th><th>Loss / Gain</th></div></tr>"
+
+    stocks_followed = ["T", "VZ", "TMUS", "TEF"]
+    ret_list = []
+    for i in range(len(stocks_followed)):
+        cur = obtain(stocks_followed[i])
+        ret_list.insert(len(ret_list), cur)
+    for i in range(len(ret_list)):
+        s_name = ret_list[i][0]
+        s_price = ret_list[i][1]
+        percent = ret_list[i][2]
+        txt1 = "<tr><td>{stock_name}</td><td>{stock_price}</td><td>{to_decide}</td></tr>".format(stock_name=s_name,
+                                                                                                 stock_price=s_price,
+                                                                                                 to_decide=percent)
+        table_head += txt1
+    return render_template('telecom1.html', generate_table=table_head)
 
 #new path for confirming a email token
 @app.route('/reset/<token>', methods=["GET", "POST"])
