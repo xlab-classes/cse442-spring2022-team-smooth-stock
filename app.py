@@ -74,6 +74,7 @@ def login_needed():
 #@login_required
 def return_news():
    xml = path_calls.parse_xml()
+   unique_total_sources = []
    filtered_xml = []
    username = session.get('username')
    if username == None:
@@ -85,7 +86,9 @@ def return_news():
          ticker = path_calls.ticker_to_stock_name(stock)
          if stock in lower or ticker in lower:
             filtered_xml.append((title, link, source))
-   return render_template('news.html', title=filtered_xml)
+            unique_total_sources.append(source)
+   unique_total_sources = list(set(unique_total_sources))
+   return render_template('news.html', title=filtered_xml, sources=unique_total_sources)
 
 @app.route('/create_account',methods =["GET", "POST"])
 def create_account() :
