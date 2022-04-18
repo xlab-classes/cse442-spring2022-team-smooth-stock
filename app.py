@@ -78,14 +78,13 @@ def return_news():
    username = session.get('username')
    if username == None:
       username = "fakeuser"
-  # username = "fakeuser"
    user_stocks = path_calls.get_user_stocks(username)
-   for title, link in xml:
+   for title, link, source in xml:
       lower = title.lower()
       for stock in user_stocks:
          ticker = path_calls.ticker_to_stock_name(stock)
          if stock in lower or ticker in lower:
-            filtered_xml.append((title, link))
+            filtered_xml.append((title, link, source))
    return render_template('news.html', title=filtered_xml)
 
 @app.route('/create_account',methods =["GET", "POST"])
@@ -253,9 +252,6 @@ def logout():
    logout_user()
    return render_template('LoginPage.html')
 
-# @app.before_first_request
-# def create_tables():
-#     database.create_all()
 
 @app.route('/follow')
 @login_required
@@ -456,10 +452,6 @@ def try_db_connect():
       print(x)
    return "view terminal to view databases"
 
-@app.route('/get_news')
-def get_news():
-   news = path_calls.parse_xml()
-   return news
 
 @login_manager.user_loader
 def user_loader(user_id):
