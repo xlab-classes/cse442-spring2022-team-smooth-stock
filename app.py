@@ -7,6 +7,8 @@ import os
 import requests
 import smtplib
 import time
+#from discord import SyncWebhook
+
 
 
 t_dir = os.path.abspath('html')
@@ -54,21 +56,6 @@ def sanitize(str):
         store = a + "0"
         return store
     return a
-def obtain_price(ticker):
-    url = "https://yfapi.net/v6/finance/quote"
-    query_string_msg = ticker + ",EURUSD=X"
-    querystring = {"symbols": ""}
-    querystring["symbols"] = query_string_msg
-    headers = {
-        'x-api-key': "hlb79LxeLF55X2SoJI0wA3UJSrpuB5ML89Ap8lK7"
-    }
-    response = requests.request("GET", url, headers=headers, params=querystring)
-    response_as_bit_string = response.content
-    int = response_as_bit_string.find(b'ask')
-    build = b''
-    for i in range(int, int + 11):
-        build += response_as_bit_string[i:i + 1]
-
 
 
 
@@ -87,7 +74,19 @@ def login_needed():
 #@login_required
 def return_news():
    xml = path_calls.parse_xml()
-   return render_template('news.html', title=xml)
+   filtered_xml = []
+   username = session.get('username')
+   if username == None:
+      username = "fakeuser"
+  # username = "fakeuser"
+   user_stocks = path_calls.get_user_stocks(username)
+   for title, link in xml:
+      lower = title.lower()
+      for stock in user_stocks:
+         ticker = path_calls.ticker_to_stock_name(stock)
+         if stock in lower or ticker in lower:
+            filtered_xml.append((title, link))
+   return render_template('news.html', title=filtered_xml)
 
 @app.route('/create_account',methods =["GET", "POST"])
 def create_account() :
@@ -112,6 +111,7 @@ def obtain(ticker):
     response = requests.request("GET", url, headers=headers, params=querystring)
     response_as_bit_string = response.content
     res_utf = response_as_bit_string.decode('utf8')
+    res_utf = res_utf.replace("askSize", "aakSize")
 
     #build the price of the stock
     ask = "ask"
@@ -161,7 +161,6 @@ def obtain(ticker):
     numerator = i_price - i_open
     res = (numerator)/i_open
     res1 = res*100
-    print("this is the percent change", res1)
     res2 = str(res1)
     res3 = res2[0:6]
     res4 = res3 + "%"
@@ -254,6 +253,9 @@ def logout():
    logout_user()
    return render_template('LoginPage.html')
 
+# @app.before_first_request
+# def create_tables():
+#     database.create_all()
 
 @app.route('/follow')
 @login_required
@@ -325,6 +327,65 @@ def return_support_page():
     return render_template('support.html', generate_table=table_head)
 
 
+@app.route('/tech1')
+def return_tech1_page():
+    table_head = "<tr id = 'joe'><div class = 'na'><th>Stock Name</th><th>Stock Price</th><th>Loss / Gain</th></div></tr>"
+
+    stocks_followed = ["GOOG", "AAPL", "NVDA", "SWCH"]
+    ret_list = []
+    for i in range(len(stocks_followed)):
+        cur = obtain(stocks_followed[i])
+        ret_list.insert(len(ret_list), cur)
+    for i in range(len(ret_list)):
+        s_name = ret_list[i][0]
+        s_price = ret_list[i][1]
+        percent = ret_list[i][2]
+        txt1 = "<tr><td>{stock_name}</td><td>{stock_price}</td><td>{to_decide}</td></tr>".format(stock_name=s_name,
+                                                                                                 stock_price=s_price,
+                                                                                                 to_decide=percent)
+        table_head += txt1
+    return render_template('tech1.html', generate_table=table_head)
+
+
+@app.route('/energy1')
+def return_energy1_page():
+    table_head = "<tr id = 'joe'><div class = 'na'><th>Stock Name</th><th>Stock Price</th><th>Loss / Gain</th></div></tr>"
+
+    stocks_followed = ["MPC", "CLR", "FANG", "CNP"]
+    ret_list = []
+    for i in range(len(stocks_followed)):
+        cur = obtain(stocks_followed[i])
+        ret_list.insert(len(ret_list), cur)
+    for i in range(len(ret_list)):
+        s_name = ret_list[i][0]
+        s_price = ret_list[i][1]
+        percent = ret_list[i][2]
+        txt1 = "<tr><td>{stock_name}</td><td>{stock_price}</td><td>{to_decide}</td></tr>".format(stock_name=s_name,
+                                                                                                 stock_price=s_price,
+                                                                                                 to_decide=percent)
+        table_head += txt1
+    return render_template('energy1.html', generate_table=table_head)
+
+
+
+@app.route('/telecom1')
+def return_telecom1_page():
+    table_head = "<tr id = 'joe'><div class = 'na'><th>Stock Name</th><th>Stock Price</th><th>Loss / Gain</th></div></tr>"
+
+    stocks_followed = ["T", "VZ", "TMUS", "TEF"]
+    ret_list = []
+    for i in range(len(stocks_followed)):
+        cur = obtain(stocks_followed[i])
+        ret_list.insert(len(ret_list), cur)
+    for i in range(len(ret_list)):
+        s_name = ret_list[i][0]
+        s_price = ret_list[i][1]
+        percent = ret_list[i][2]
+        txt1 = "<tr><td>{stock_name}</td><td>{stock_price}</td><td>{to_decide}</td></tr>".format(stock_name=s_name,
+                                                                                                 stock_price=s_price,
+                                                                                                 to_decide=percent)
+        table_head += txt1
+    return render_template('telecom1.html', generate_table=table_head)
 
 #new path for confirming a email token
 @app.route('/reset/<token>', methods=["GET", "POST"])
@@ -402,14 +463,11 @@ def get_news():
 
 @login_manager.user_loader
 def user_loader(user_id):
-   print("TEST?")
-   print(path_calls.online_users)
    value = int(user_id)
    for x in path_calls.online_users :
       if x.id == value:
          print(x)
          return x
-   print("not found")
    return DS.User()
 
 if __name__ == '__main__':

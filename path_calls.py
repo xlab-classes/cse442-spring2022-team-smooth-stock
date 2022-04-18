@@ -138,6 +138,9 @@ def parse_xml():
                         link = i.contents[2]
                         links.append(link)
                 d = list(zip(titles, links))
+                d.append(("Why Google Is the Safest Nasdaq Stock to Buy", "https://www.nasdaq.com/articles/why-google-is-the-safest-nasdaq-stock-to-buy"))
+                d.append(("Microsoft Gets Antitrust Complaints From Aruba, Danish Firms Over Cloud", "https://www.msn.com/en-us/money/other/microsoft-gets-antitrust-complaints-from-aruba-danish-firms-over-cloud/ar-AAWaUlX?ocid=BingNewsSearch"))
+                d.append(("Apple mixed reality glasses release pushed to 2023, report claims", "https://www.msn.com/en-us/news/technology/apple-mixed-reality-glasses-release-pushed-to-2023-report-claims/ar-AAWaNO7?ocid=BingNewsSearch"))
         return d
 
 # follow function. Connects to the database and updates the current User's
@@ -356,4 +359,33 @@ def obtain_price(ticker):
     str_build = str(build)
     price_str = str_build[7:len(str_build) - 1]
     return price_str
+
+
+def get_user_stocks(username):
+    db = mysql.connector.connect(
+        host="oceanus.cse.buffalo.edu",
+        user="jakeheid",
+        password="50271130",
+        database="cse442_2022_spring_team_q_db"
+    )
+    username = "fakeuser" #set for testing #77
+    cursor = db.cursor()
+    saved_stocks_query = "SELECT stocks FROM saved_stocks WHERE username = %s"
+    saved_stocks_params = [username]
+    cursor.execute(saved_stocks_query, saved_stocks_params)
+    result = cursor.fetchone()[0]
+    stocks = str.split(result, ', ')
+    return stocks
+
+def ticker_to_stock_name(ticker):
+    if ticker == "GOOG":
+        return "google"
+    elif ticker == "AAPL":
+        return "apple"
+    elif ticker == "MSFT":
+        return "microsoft"
+    else:
+        return "not implemented"
+
+
 
