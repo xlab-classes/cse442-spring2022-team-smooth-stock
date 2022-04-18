@@ -7,6 +7,8 @@ from bs4 import BeautifulSoup
 import requests
 import mysql.connector
 import json
+import xml.etree.ElementTree as ET
+
 
 online_users = []
 
@@ -124,24 +126,21 @@ def save_yahoo_xml(url):
 
 def parse_xml():
         save_yahoo_xml("https://finance.yahoo.com/rss/")
-        with open("a.xml", "r") as file:
-                content = file.readlines()
-                content = "".join(content)
-                bs_content = BeautifulSoup(content, "lxml")
-                items = bs_content.find_all("item")
-                titles = []
-                links = []
-
-                for i in items:
-                        title = i.find("title").text
-                        titles.append(title)
-                        link = i.contents[2]
-                        links.append(link)
-                d = list(zip(titles, links))
-                d.append(("Why Google Is the Safest Nasdaq Stock to Buy", "https://www.nasdaq.com/articles/why-google-is-the-safest-nasdaq-stock-to-buy"))
-                d.append(("Microsoft Gets Antitrust Complaints From Aruba, Danish Firms Over Cloud", "https://www.msn.com/en-us/money/other/microsoft-gets-antitrust-complaints-from-aruba-danish-firms-over-cloud/ar-AAWaUlX?ocid=BingNewsSearch"))
-                d.append(("Apple mixed reality glasses release pushed to 2023, report claims", "https://www.msn.com/en-us/news/technology/apple-mixed-reality-glasses-release-pushed-to-2023-report-claims/ar-AAWaNO7?ocid=BingNewsSearch"))
-        return d
+        mytree = ET.parse('a.xml')
+        myroot = mytree.getroot()
+        links = []
+        titles = []
+        for link in myroot.iter('link'):
+            if link.text != "https://finance.yahoo.com/":
+                links.append(link.text)
+        for title in myroot.iter('title'):
+            if "Yahoo Finance" not in title.text:
+                titles.append(title.text)
+        zipped = list(zip(titles, links))
+        zipped.append(("Why Google Is the Safest Nasdaq Stock to Buy", "https://www.nasdaq.com/articles/why-google-is-the-safest-nasdaq-stock-to-buy"))
+        zipped.append(("Microsoft Gets Antitrust Complaints From Aruba, Danish Firms Over Cloud", "https://www.msn.com/en-us/money/other/microsoft-gets-antitrust-complaints-from-aruba-danish-firms-over-cloud/ar-AAWaUlX?ocid=BingNewsSearch"))
+        zipped.append(("Apple mixed reality glasses release pushed to 2023, report claims", "https://www.msn.com/en-us/news/technology/apple-mixed-reality-glasses-release-pushed-to-2023-report-claims/ar-AAWaNO7?ocid=BingNewsSearch"))
+        return zipped
 
 # follow function. Connects to the database and updates the current User's
 # list of followed stocks
