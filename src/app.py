@@ -77,17 +77,17 @@ def login_needed():
 def return_news():
    xml = path_calls.parse_xml()
    filtered_xml = []
-   #username = session.get('username')
-   username = "fakeuser"
+   username = session.get('username')
+   if username == None:
+      username = "fakeuser"
+  # username = "fakeuser"
    user_stocks = path_calls.get_user_stocks(username)
-   print(user_stocks)
    for title, link in xml:
       lower = title.lower()
       for stock in user_stocks:
          ticker = path_calls.ticker_to_stock_name(stock)
          if stock in lower or ticker in lower:
             filtered_xml.append((title, link))
-   print(filtered_xml)
    return render_template('news.html', title=filtered_xml)
 
 @app.route('/create_account',methods =["GET", "POST"])
