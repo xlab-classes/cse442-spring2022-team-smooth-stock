@@ -3,7 +3,7 @@
 <head>
 <style>
 body {
-  background-color: gray;
+  background-color: #686968;
   text-align: center
 }
 
@@ -18,6 +18,33 @@ a href{
   text-align: center
 }
 
+.block {
+ margin: auto;
+  display: block;
+  width: 15%;
+  border: none;
+  background-color: #454747;
+  border: 3px solid #2f2f30;
+  color: white;
+  padding: 14px 28px;
+  font-size: 16px;
+  text-align: center;
+}
+
+.block1 {
+ margin: auto;
+  display: block;
+  width: 80%;
+  border: none;
+  background-color: #454747;
+  border: 3px solid #2f2f30;
+  color: white;
+  padding: 14px 28px;
+  font-size: 16px;
+  cursor: pointer;
+  text-align: center;
+}
+
 </style>
 </head>
 <body>
@@ -25,27 +52,27 @@ a href{
     <p class=error>{{ error }}
   {% endif %}
 
-<h1>Create Account</h1>
+<h1 style="font-family:verdana;" >Create Account</h1>
 
-<form action="/create_account" method="POST">
+<form action="/create_account" method="POST" class="block">
   <label for="username">Username:</label><br>
   <input type="text" id="username" name="username"><br>
   <label for="password">Password:</label><br>
   <input type="text" id="password" name="password"><br>
   <label for="email">Email:</label><br>
-  <input type="text" id="email" name="email"><br>
-  <input type="submit" value="Create">
+  <input type="text" id="email" name="email"><br><br>
+  <input type="submit" value="Create" class="block1">
 </form>
 
 
-<h3>Password Requirements:<br>
+<h3 style="font-family:verdana;">Password Requirements:<br>
 At least 8 characters long<br>
 At least 1 number<br>
 At least 1 capital letter<br>
   At least 1 lowercase letter<br>
 </h3>
 
-<a href="/">Login Page</a>
+<a href="/" class="block">Login Page</a>
 
 
 </body>
