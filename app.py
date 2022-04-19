@@ -58,7 +58,7 @@ def sanitize(str):
     return a
 
 
-
+@app.route('/loginpage')
 @app.route('/',methods =["GET", "POST"])
 def login():
    if request.method == "GET":
@@ -71,7 +71,7 @@ def login_needed():
    return render_template('LoginPage.html', error = "Access denied, login required.")
 
 @app.route('/news')
-#@login_required
+@login_required
 def return_news():
    xml = path_calls.parse_xml()
    filtered_xml = []
@@ -95,7 +95,8 @@ def create_account() :
    elif request.method == "POST":  # post requst for form
       return path_calls.create_account(request)
 
-@app.route('/landingpage')
+@app.route('/LandingPage')
+@login_required
 def return_landing_page():
    return render_template('LandingPage.html')
 
@@ -264,13 +265,14 @@ def follow():
 
 
 @app.route('/find-stock', methods=["POST"])
-#@login_required
+@login_required
 def return_discover_template_page():
    # Add searched stock to the session
    session['searched-stock'] = str.upper(request.form.get('stock'))
    return(path_calls.return_discover_template_page(str.upper(request.form.get('stock'))))
    
 @app.route('/442')
+@login_required
 def return_442_page():
    time.sleep(3)
    return render_template('442.html')
@@ -432,29 +434,6 @@ def try_db_connect2():
       print(x)
    return "view terminal to view databases"
 
-@app.route('/db_test')
-def try_db_connect():
-
-   cursor = mydb.cursor()
-
-   sql = "DROP TABLE userdata"
-
-   cursor.execute(sql)
-
-   cursor.execute(
-      "CREATE TABLE userdata (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(255), email VARCHAR(255),password VARCHAR(255),salt VARCHAR(255),is_active INT)")
-
-   sql = "INSERT INTO userdata (username, email,password,salt,is_active) VALUES (%s, %s, %s, %s, %s)"
-   val = ("test1", "email1", "pass1", "salt1", 0)
-   cursor.execute(sql, val)
-   mydb.commit()
-
-   cursor.execute("SELECT * FROM userdata")
-   myresult = cursor.fetchall()
-
-   for x in myresult :
-      print(x)
-   return "view terminal to view databases"
 
 @app.route('/get_news')
 def get_news():

@@ -16,10 +16,6 @@ online_users = []
 def login(request):
     username = request.form.get("username")
     password = request.form.get("password")
-    if request.form.get("Remember me"):
-        remember = True
-    else:
-        remember = False
     errorlist = ""
 
     mycursor = mydb.cursor()
@@ -48,7 +44,7 @@ def login(request):
             # Store User username to session
             session['username'] = username
 
-            return render_template('LoginPage.html', error = "You're logged in!")
+            return render_template('LandingPage.html')
         else :
             return render_template('LoginPage.html', error = "Wrong password")
 
@@ -117,7 +113,7 @@ def create_account(request):
     mycursor.execute(sql)
 
     errorlist = "Account created!"
-    return render_template('CreateAccount.html', error = errorlist)
+    return render_template('LoginPage.html', error = errorlist)
 
 def save_yahoo_xml(url):
         response = requests.get(url)
