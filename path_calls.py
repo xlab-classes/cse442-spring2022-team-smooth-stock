@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, session, redirect, url_for
 from flask_login import login_user
 import hashlib
 from app import DS
@@ -214,6 +214,7 @@ def follow():
             # Remove current_stock from stocks_followed
             stocks_followed = stocks_followed.replace((current_stock + ", "), "", 1)
             stocks_followed = stocks_followed.replace((", " + current_stock), "", 1)
+            stocks_followed = stocks_followed.replace(current_stock, "", 1)
 
     # Update saved_stock Table for User 
     sql = "UPDATE saved_stocks SET stocks = %s WHERE username = %s"
@@ -224,16 +225,17 @@ def follow():
     # Print saved_stocks information
     cursor.execute("SELECT * FROM saved_stocks")
     myresult = cursor.fetchall()
+    print(myresult)
 
     # Re-enable Foreign Key Checks 
     sql = "SET FOREIGN_KEY_CHECKS=1"
     cursor.execute(sql)
 
     # Render initial discover page (for now)
-    return render_template('discover.html')
+    return return_discover_template_page(current_stock)
 
 #return_discover_template_page.
-def return_discover_template_page():
+def return_discover_template_page(symbol):
 
     """
     Variables to be obtained from Yahoo Finance API to be displayed on web page:
@@ -251,8 +253,7 @@ def return_discover_template_page():
     """
 
     # Get the company sybmol user is looking for
-    company_symbol = request.form.get('stock')
-    print(company_symbol)
+    company_symbol = symbol
 
     # Create url for Yahoo Finace API
     url = "https://yfapi.net/v6/finance/quote"

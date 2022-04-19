@@ -268,7 +268,7 @@ def follow():
 def return_discover_template_page():
    # Add searched stock to the session
    session['searched-stock'] = str.upper(request.form.get('stock'))
-   return(path_calls.return_discover_template_page())
+   return(path_calls.return_discover_template_page(str.upper(request.form.get('stock'))))
    
 @app.route('/442')
 def return_442_page():
