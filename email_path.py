@@ -1,6 +1,6 @@
 from flask import url_for, redirect, render_template, app, request
 from flask_mail import Mail, Message
-import bcrypt
+import hashlib, os
 from forms import ResetEmailForm, ResetPasswordForm
 from app import mydb, app, mail
 from itsdangerous import URLSafeTimedSerializer
@@ -44,6 +44,7 @@ def reset_email():
             return render_template('password_reset.html', form=form, error="Invalid email!")
         print("Email to send",user[2])
         send_reset_link(user[2])
+        return render_template('LoginPage.html', error = "Reset password email sent")
 
     return render_template('password_reset.html', form=form)
 
@@ -80,8 +81,7 @@ def token_reset(token):
 
 
         salt = (user[4]).encode() #grab the salt and encode
-        hashed_password = bcrypt.hashpw(password.encode(), salt)
-        hashed_password = hashed_password.decode()
+        hashed_password = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, 10000).decode('latin1')
 
         sql = 'UPDATE userdata SET password = %s WHERE email = %s'
         val = (hashed_password,email)
