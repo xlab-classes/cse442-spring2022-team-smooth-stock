@@ -233,7 +233,25 @@ def discord_notity(message):
 @app.route('/notify', methods=['GET','POST'])
 @login_required
 def return_notify_page():
+   mydb = mysql.connector.connect(
+         host="oceanus.cse.buffalo.edu",
+         user="dtan2",
+         password="50278774",
+         database="cse442_2022_spring_team_q_db"
+      )
+   cursor = mydb.cursor()
 
+   cursor.execute("SELECT * FROM userdata")
+   myresult = cursor.fetchall()
+
+   for s in myresult:
+      print(s)
+
+   cursor.execute("SELECT * FROM saved_stocks")
+   myresult = cursor.fetchall()
+
+   for s in myresult:
+      print(s)
 
    if request.method == 'POST':
       to = request.form["newemail"]
