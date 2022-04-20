@@ -6,7 +6,6 @@
   src="https://code.jquery.com/jquery-3.6.0.min.js"
   integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
   crossorigin="anonymous"></script>
-  <!-- <script src="../src/static/news-scripts.js"></script> -->
   <script src="{{url_for('static', filename='news-scripts.js')}}"></script>
 
 
@@ -62,25 +61,30 @@ color: blue;
 <br />
 <br />
 <br />
+<ul>
+  {% for each in sources %}
+  <li>{{ each }}</li>
+  <button btn_id={{ each }}>show/hide</button>
+  {% endfor %}
+</ul>
+<br />
 
 <table id = "news-table">
   <tr id="head">
-    <th>Name</th>
-    <th>Latest News</th>
+    <th>Title</th>
+    <th>Link</th>
+    <th>Source</th>
   </tr>
   {% for each in title %}
-  <tr>
+  <tr id={{ each[2] }} >
   <td>{{ each[0] }}
   <td><a href={{ each[1] }} >{{each[1]}}</a>
+  <td>{{ each[2] }}
   </tr>
   {% endfor %}
   
 </table>
 
-<script>
-  console.log(title);
-</script>
-
-
 </body>
 </html>
+  

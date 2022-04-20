@@ -126,16 +126,19 @@ def parse_xml():
         myroot = mytree.getroot()
         links = []
         titles = []
+        sources = []
         for link in myroot.iter('link'):
             if link.text != "https://finance.yahoo.com/":
                 links.append(link.text)
         for title in myroot.iter('title'):
             if "Yahoo Finance" not in title.text:
                 titles.append(title.text)
-        zipped = list(zip(titles, links))
-        zipped.append(("Why Google Is the Safest Nasdaq Stock to Buy", "https://www.nasdaq.com/articles/why-google-is-the-safest-nasdaq-stock-to-buy"))
-        zipped.append(("Microsoft Gets Antitrust Complaints From Aruba, Danish Firms Over Cloud", "https://www.msn.com/en-us/money/other/microsoft-gets-antitrust-complaints-from-aruba-danish-firms-over-cloud/ar-AAWaUlX?ocid=BingNewsSearch"))
-        zipped.append(("Apple mixed reality glasses release pushed to 2023, report claims", "https://www.msn.com/en-us/news/technology/apple-mixed-reality-glasses-release-pushed-to-2023-report-claims/ar-AAWaNO7?ocid=BingNewsSearch"))
+        for source in myroot.iter('source'):
+            sources.append(source.text)
+        zipped = list(zip(titles, links, sources))
+        zipped.append(("Why Google Is the Safest Nasdaq Stock to Buy", "https://www.nasdaq.com/articles/why-google-is-the-safest-nasdaq-stock-to-buy", "nasdaq"))
+        zipped.append(("Microsoft Gets Antitrust Complaints From Aruba, Danish Firms Over Cloud", "https://www.msn.com/en-us/money/other/microsoft-gets-antitrust-complaints-from-aruba-danish-firms-over-cloud/ar-AAWaUlX?ocid=BingNewsSearch", "msn"))
+        zipped.append(("Apple mixed reality glasses release pushed to 2023, report claims", "https://www.msn.com/en-us/news/technology/apple-mixed-reality-glasses-release-pushed-to-2023-report-claims/ar-AAWaNO7?ocid=BingNewsSearch", "msn"))
         return zipped
 
 # follow function. Connects to the database and updates the current User's
