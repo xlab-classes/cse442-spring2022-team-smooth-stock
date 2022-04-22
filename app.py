@@ -332,7 +332,7 @@ def return_support_page():
 def return_tech1_page():
     table_head = "<tr id = 'joe'><div class = 'na'><th>Stock Name</th><th>Stock Price</th><th>Loss / Gain</th></div></tr>"
 
-    stocks_followed = ["GOOG", "AAPL", "NVDA", "SWCH"]
+    stocks_followed = ["GOOG", "AAPL", "NVDA", "SWCH", "FB", "DIS", "EBAY", "UNP", "ISRG"]
     ret_list = []
     for i in range(len(stocks_followed)):
         cur = obtain(stocks_followed[i])
@@ -352,7 +352,7 @@ def return_tech1_page():
 def return_energy1_page():
     table_head = "<tr id = 'joe'><div class = 'na'><th>Stock Name</th><th>Stock Price</th><th>Loss / Gain</th></div></tr>"
 
-    stocks_followed = ["MPC", "CLR", "FANG", "CNP"]
+    stocks_followed = ["MPC", "CLR", "FANG", "CNP", "TWTR", "WDC", "ATEN", "PLUG", "EA" ]
     ret_list = []
     for i in range(len(stocks_followed)):
         cur = obtain(stocks_followed[i])
@@ -373,7 +373,7 @@ def return_energy1_page():
 def return_telecom1_page():
     table_head = "<tr id = 'joe'><div class = 'na'><th>Stock Name</th><th>Stock Price</th><th>Loss / Gain</th></div></tr>"
 
-    stocks_followed = ["T", "VZ", "TMUS", "TEF"]
+    stocks_followed = ["T", "VZ", "TMUS", "TEF", "AMT", "LBRDA", "AMOV", "MAXR" ]
     ret_list = []
     for i in range(len(stocks_followed)):
         cur = obtain(stocks_followed[i])
