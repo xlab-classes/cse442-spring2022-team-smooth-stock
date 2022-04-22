@@ -234,6 +234,24 @@ def stock_information(name, newprice, plusminus):
    # cursor.execute("SELECT username, email FROM userdata")
 
 
+def news_information(name, message):
+   mydb = mysql.connector.connect(
+         host="oceanus.cse.buffalo.edu",
+         user="dtan2",
+         password="50278774",
+         database="cse442_2022_spring_team_q_db"
+      )
+   cursor = mydb.cursor()
+
+   cursor.execute("SELECT username, stocks FROM saved_stocks")
+   myresult = cursor.fetchall()
+
+   for x in myresult:
+      arr_stock = x[1].split(", ")
+      username = x[0]
+      for stock in arr_stock:
+          if notifyUsers(stock, name, username, cursor, "", message):
+            break
 
 def discord_notity(message):
     url = "https://discord.com/api/webhooks/950491418491752448/ZKjXE4laBmFGZxbls5cpZhZ3lbqiO8DXR6S9UweEQ_uowDXeh2kBmnflT9nQh6sJq47K"
@@ -247,21 +265,10 @@ def discord_notity(message):
 @app.route('/notify', methods=['GET','POST'])
 @login_required
 def return_notify_page():
-   mydb = mysql.connector.connect(
-         host="oceanus.cse.buffalo.edu",
-         user="dtan2",
-         password="50278774",
-         database="cse442_2022_spring_team_q_db"
-      )
-   cursor = mydb.cursor()
-
-   cursor.execute("SELECT * FROM userdata")
-   myresult = cursor.fetchall()
-
-   for s in myresult:
-      print(s)
 
    stock_information('NVDA', 214.82, 3.23)
+   news_information('NVDA', "")
+
    if request.method == 'POST':
       to = request.form["newemail"]
       email_message = ""
