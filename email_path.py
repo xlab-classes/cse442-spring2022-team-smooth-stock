@@ -44,6 +44,7 @@ def reset_email():
             return render_template('password_reset.html', form=form, error="Invalid email!")
         print("Email to send",user[2])
         send_reset_link(user[2])
+        return render_template('LoginPage.html', error = "Reset password email sent")
 
     return render_template('password_reset.html', form=form)
 

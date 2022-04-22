@@ -7,7 +7,10 @@ import os
 import requests
 import smtplib
 import time
-#from discord import SyncWebhook
+# import io
+import discord
+from discord import Webhook, RequestsWebhookAdapter
+
 
 
 
@@ -58,7 +61,7 @@ def sanitize(str):
     return a
 
 
-
+@app.route('/loginpage')
 @app.route('/',methods =["GET", "POST"])
 def login():
    if request.method == "GET":
@@ -71,22 +74,24 @@ def login_needed():
    return render_template('LoginPage.html', error = "Access denied, login required.")
 
 @app.route('/news')
-#@login_required
+@login_required
 def return_news():
    xml = path_calls.parse_xml()
+   unique_total_sources = []
    filtered_xml = []
    username = session.get('username')
    if username == None:
       username = "fakeuser"
-  # username = "fakeuser"
    user_stocks = path_calls.get_user_stocks(username)
-   for title, link in xml:
+   for title, link, source in xml:
       lower = title.lower()
       for stock in user_stocks:
          ticker = path_calls.ticker_to_stock_name(stock)
          if stock in lower or ticker in lower:
-            filtered_xml.append((title, link))
-   return render_template('news.html', title=filtered_xml)
+            filtered_xml.append((title, link, source))
+            unique_total_sources.append(source)
+   unique_total_sources = list(set(unique_total_sources))
+   return render_template('news.html', title=filtered_xml, sources=unique_total_sources)
 
 @app.route('/create_account',methods =["GET", "POST"])
 def create_account() :
@@ -95,7 +100,8 @@ def create_account() :
    elif request.method == "POST":  # post requst for form
       return path_calls.create_account(request)
 
-@app.route('/landingpage')
+@app.route('/LandingPage')
+@login_required
 def return_landing_page():
    return render_template('LandingPage.html')
 
@@ -149,7 +155,6 @@ def obtain(ticker):
     name = temp2[1]
     namefinal = name.replace('"', "")
   
-
     ret = []
     ret.insert(0, namefinal)
     ret.insert(1, price)
@@ -164,14 +169,15 @@ def obtain(ticker):
     res2 = str(res1)
     res3 = res2[0:6]
     res4 = res3 + "%"
- 
+    stock_information(name,i_price, res4)
+
     ret.insert(2, res4)
 
     #res4 is the percent change, #namefinal is the final name, #price is the current price of the stock
 
     return ret
 
-def email(sender_to, message):
+def sendEmailNotification(sender_to, message):
    gmail_user = 'smoothstocks1@gmail.com'
    gmail_password =  '!qazxsw23'
    # email_text = """\
@@ -193,7 +199,7 @@ def email(sender_to, message):
       print ("Something went wrong….",ex)
 
 
-def where(stock, name, username,cursor, newprice, plusminus):
+def notifyUsers(stock, name, username,cursor, newprice, plusminus):
    if stock == name:
       cursor.execute("SELECT email, username FROM userdata")
       myresults = cursor.fetchall()
@@ -202,11 +208,12 @@ def where(stock, name, username,cursor, newprice, plusminus):
          print(s[1])
          if username==s[1]:
             print(s[0])
-            email(s[0], stock+" price change!\n"+"New price: "+str(newprice)+"\n"+"Change By: "+str(plusminus))
+            sendEmailNotification(s[0], stock+" price change!\n"+"New price: "+str(newprice)+"\n"+"Change By: "+str(plusminus))
+            discord_notity(stock+" price change!\n"+"New price: "+str(newprice)+"\n"+"Change By: "+str(plusminus))
             return True
    return False
 
-def parse_information(name, newprice, plusminus):
+def stock_information(name, newprice, plusminus):
    mydb = mysql.connector.connect(
          host="oceanus.cse.buffalo.edu",
          user="dtan2",
@@ -222,18 +229,45 @@ def parse_information(name, newprice, plusminus):
       arr_stock = x[1].split(", ")
       username = x[0]
       for stock in arr_stock:
-          if where(stock, name, username, cursor, newprice, plusminus):
+          if notifyUsers(stock, name, username, cursor, newprice, plusminus):
             break
    # cursor.execute("SELECT username, email FROM userdata")
+
+
+def news_information(name, message):
+   mydb = mysql.connector.connect(
+         host="oceanus.cse.buffalo.edu",
+         user="dtan2",
+         password="50278774",
+         database="cse442_2022_spring_team_q_db"
+      )
+   cursor = mydb.cursor()
+
+   cursor.execute("SELECT username, stocks FROM saved_stocks")
+   myresult = cursor.fetchall()
+
+   for x in myresult:
+      arr_stock = x[1].split(", ")
+      username = x[0]
+      for stock in arr_stock:
+          if notifyUsers(stock, name, username, cursor, "", message):
+            break
+
+def discord_notity(message):
+    url = "https://discord.com/api/webhooks/950491418491752448/ZKjXE4laBmFGZxbls5cpZhZ3lbqiO8DXR6S9UweEQ_uowDXeh2kBmnflT9nQh6sJq47K"
+    webhook = Webhook.from_url(url, adapter=RequestsWebhookAdapter()) # Initializing webhook
+    webhook.send(content=message) # Executing webhook.
+
+
+#discord_notity("test")
 
 
 @app.route('/notify', methods=['GET','POST'])
 @login_required
 def return_notify_page():
 
-   
-
-   #parse_information("APPL", 170, 10)
+   stock_information('NVDA', 214.82, 3.23)
+   news_information('NVDA', "")
 
    if request.method == 'POST':
       to = request.form["newemail"]
@@ -253,9 +287,6 @@ def logout():
    logout_user()
    return render_template('LoginPage.html')
 
-# @app.before_first_request
-# def create_tables():
-#     database.create_all()
 
 @app.route('/follow')
 @login_required
@@ -264,13 +295,14 @@ def follow():
 
 
 @app.route('/find-stock', methods=["POST"])
-#@login_required
+@login_required
 def return_discover_template_page():
    # Add searched stock to the session
    session['searched-stock'] = str.upper(request.form.get('stock'))
-   return(path_calls.return_discover_template_page())
+   return(path_calls.return_discover_template_page(str.upper(request.form.get('stock'))))
    
 @app.route('/442')
+@login_required
 def return_442_page():
    time.sleep(3)
    return render_template('442.html')
@@ -432,34 +464,7 @@ def try_db_connect2():
       print(x)
    return "view terminal to view databases"
 
-@app.route('/db_test')
-def try_db_connect():
 
-   cursor = mydb.cursor()
-
-   sql = "DROP TABLE userdata"
-
-   cursor.execute(sql)
-
-   cursor.execute(
-      "CREATE TABLE userdata (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(255), email VARCHAR(255),password VARCHAR(255),salt VARCHAR(255),is_active INT)")
-
-   sql = "INSERT INTO userdata (username, email,password,salt,is_active) VALUES (%s, %s, %s, %s, %s)"
-   val = ("test1", "email1", "pass1", "salt1", 0)
-   cursor.execute(sql, val)
-   mydb.commit()
-
-   cursor.execute("SELECT * FROM userdata")
-   myresult = cursor.fetchall()
-
-   for x in myresult :
-      print(x)
-   return "view terminal to view databases"
-
-@app.route('/get_news')
-def get_news():
-   news = path_calls.parse_xml()
-   return news
 
 @login_manager.user_loader
 def user_loader(user_id):

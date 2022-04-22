@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, session, redirect, url_for
 from flask_login import login_user
 import hashlib
 from app import DS
@@ -7,6 +7,8 @@ from bs4 import BeautifulSoup
 import requests
 import mysql.connector
 import json
+import smtplib
+#from discord import SyncWebhook
 import xml.etree.ElementTree as ET
 
 
@@ -16,10 +18,6 @@ online_users = []
 def login(request):
     username = request.form.get("username")
     password = request.form.get("password")
-    if request.form.get("Remember me"):
-        remember = True
-    else:
-        remember = False
     errorlist = ""
 
     mycursor = mydb.cursor()
@@ -48,7 +46,7 @@ def login(request):
             # Store User username to session
             session['username'] = username
 
-            return render_template('LoginPage.html', error = "You're logged in!")
+            return render_template('LandingPage.html')
         else :
             return render_template('LoginPage.html', error = "Wrong password")
 
@@ -117,7 +115,7 @@ def create_account(request):
     mycursor.execute(sql)
 
     errorlist = "Account created!"
-    return render_template('CreateAccount.html', error = errorlist)
+    return render_template('LoginPage.html', error = errorlist)
 
 def save_yahoo_xml(url):
         response = requests.get(url)
@@ -130,16 +128,19 @@ def parse_xml():
         myroot = mytree.getroot()
         links = []
         titles = []
+        sources = []
         for link in myroot.iter('link'):
             if link.text != "https://finance.yahoo.com/":
                 links.append(link.text)
         for title in myroot.iter('title'):
             if "Yahoo Finance" not in title.text:
                 titles.append(title.text)
-        zipped = list(zip(titles, links))
-        zipped.append(("Why Google Is the Safest Nasdaq Stock to Buy", "https://www.nasdaq.com/articles/why-google-is-the-safest-nasdaq-stock-to-buy"))
-        zipped.append(("Microsoft Gets Antitrust Complaints From Aruba, Danish Firms Over Cloud", "https://www.msn.com/en-us/money/other/microsoft-gets-antitrust-complaints-from-aruba-danish-firms-over-cloud/ar-AAWaUlX?ocid=BingNewsSearch"))
-        zipped.append(("Apple mixed reality glasses release pushed to 2023, report claims", "https://www.msn.com/en-us/news/technology/apple-mixed-reality-glasses-release-pushed-to-2023-report-claims/ar-AAWaNO7?ocid=BingNewsSearch"))
+        for source in myroot.iter('source'):
+            sources.append(source.text)
+        zipped = list(zip(titles, links, sources))
+        zipped.append(("Why Google Is the Safest Nasdaq Stock to Buy", "https://www.nasdaq.com/articles/why-google-is-the-safest-nasdaq-stock-to-buy", "nasdaq"))
+        zipped.append(("Microsoft Gets Antitrust Complaints From Aruba, Danish Firms Over Cloud", "https://www.msn.com/en-us/money/other/microsoft-gets-antitrust-complaints-from-aruba-danish-firms-over-cloud/ar-AAWaUlX?ocid=BingNewsSearch", "msn"))
+        zipped.append(("Apple mixed reality glasses release pushed to 2023, report claims", "https://www.msn.com/en-us/news/technology/apple-mixed-reality-glasses-release-pushed-to-2023-report-claims/ar-AAWaNO7?ocid=BingNewsSearch", "msn"))
         return zipped
 
 # follow function. Connects to the database and updates the current User's
@@ -214,6 +215,7 @@ def follow():
             # Remove current_stock from stocks_followed
             stocks_followed = stocks_followed.replace((current_stock + ", "), "", 1)
             stocks_followed = stocks_followed.replace((", " + current_stock), "", 1)
+            stocks_followed = stocks_followed.replace(current_stock, "", 1)
 
     # Update saved_stock Table for User 
     sql = "UPDATE saved_stocks SET stocks = %s WHERE username = %s"
@@ -224,16 +226,17 @@ def follow():
     # Print saved_stocks information
     cursor.execute("SELECT * FROM saved_stocks")
     myresult = cursor.fetchall()
+    print(myresult)
 
     # Re-enable Foreign Key Checks 
     sql = "SET FOREIGN_KEY_CHECKS=1"
     cursor.execute(sql)
 
     # Render initial discover page (for now)
-    return render_template('discover.html')
+    return return_discover_template_page(current_stock)
 
 #return_discover_template_page.
-def return_discover_template_page():
+def return_discover_template_page(symbol):
 
     """
     Variables to be obtained from Yahoo Finance API to be displayed on web page:
@@ -251,8 +254,7 @@ def return_discover_template_page():
     """
 
     # Get the company sybmol user is looking for
-    company_symbol = request.form.get('stock')
-    print(company_symbol)
+    company_symbol = symbol
 
     # Create url for Yahoo Finace API
     url = "https://yfapi.net/v6/finance/quote"
