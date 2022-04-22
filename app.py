@@ -9,7 +9,7 @@ import smtplib
 import time
 # import io
 import discord
-from discord import Webhook, RequestsWebhookAdapter # Importing discord.Webhook and discord.RequestsWebhookAdapter
+from discord import Webhook, RequestsWebhookAdapter
 
 
 
@@ -169,7 +169,7 @@ def obtain(ticker):
     res2 = str(res1)
     res3 = res2[0:6]
     res4 = res3 + "%"
-    parse_information(name,i_price, res4)
+    stock_information(name,i_price, res4)
 
     ret.insert(2, res4)
 
@@ -177,7 +177,7 @@ def obtain(ticker):
 
     return ret
 
-def email(sender_to, message):
+def sendEmailNotification(sender_to, message):
    gmail_user = 'smoothstocks1@gmail.com'
    gmail_password =  '!qazxsw23'
    # email_text = """\
@@ -199,7 +199,7 @@ def email(sender_to, message):
       print ("Something went wrong….",ex)
 
 
-def where(stock, name, username,cursor, newprice, plusminus):
+def notifyUsers(stock, name, username,cursor, newprice, plusminus):
    if stock == name:
       cursor.execute("SELECT email, username FROM userdata")
       myresults = cursor.fetchall()
@@ -208,12 +208,12 @@ def where(stock, name, username,cursor, newprice, plusminus):
          print(s[1])
          if username==s[1]:
             print(s[0])
-            email(s[0], stock+" price change!\n"+"New price: "+str(newprice)+"\n"+"Change By: "+str(plusminus))
+            sendEmailNotification(s[0], stock+" price change!\n"+"New price: "+str(newprice)+"\n"+"Change By: "+str(plusminus))
             discord_notity(stock+" price change!\n"+"New price: "+str(newprice)+"\n"+"Change By: "+str(plusminus))
             return True
    return False
 
-def parse_information(name, newprice, plusminus):
+def stock_information(name, newprice, plusminus):
    mydb = mysql.connector.connect(
          host="oceanus.cse.buffalo.edu",
          user="dtan2",
@@ -229,7 +229,7 @@ def parse_information(name, newprice, plusminus):
       arr_stock = x[1].split(", ")
       username = x[0]
       for stock in arr_stock:
-          if where(stock, name, username, cursor, newprice, plusminus):
+          if notifyUsers(stock, name, username, cursor, newprice, plusminus):
             break
    # cursor.execute("SELECT username, email FROM userdata")
 
@@ -261,12 +261,7 @@ def return_notify_page():
    for s in myresult:
       print(s)
 
-   cursor.execute("SELECT * FROM saved_stocks")
-   myresult = cursor.fetchall()
-
-   for s in myresult:
-      print(s)
-
+   stock_information('NVDA', 214.82, 3.23)
    if request.method == 'POST':
       to = request.form["newemail"]
       email_message = ""
