@@ -317,38 +317,15 @@ def return_support_page():
       
     table_head = "<tr id = 'joe'><div class = 'na'><th>Stock Name</th><th>Stock Price</th><th>Loss / Gain</th></div></tr>"
 
-    # Get current stock from session
-    current_stock = session.get('searched-stock')
-    print("current_stock ->", current_stock)
+  
 
-    # Connect to database
-    mydb = mysql.connector.connect(
-        host="oceanus.cse.buffalo.edu",
-        user="mdlaszlo",
-        password="50265202",
-        database="cse442_2022_spring_team_q_db"
-    )
-
-    # Create cursor
-    cursor = mydb.cursor()
-
-    # Disable Foreign Key Checks
-    sql = "SET FOREIGN_KEY_CHECKS=0"
-    cursor.execute(sql)
-
-    # Get the current user from the session
-    current_user = session.get('username')
-    print("current_user = ", current_user)
-
-    # Fetch current_user's record from saved_stocks Tabke
-    sql = "SELECT stocks FROM saved_stocks WHERE username = %s"
-    cursor.execute(sql, [current_user])
-    record = cursor.fetchone()
-    print("stocks followed ->", record[0])
-    stocks_followed = record[0]
-
-
+    
     ret_list = []
+    username = session.get('username')
+    user_stocks = path_calls.get_user_stocks(username)
+    stocks_followed = []
+    stocks_followed = user_stocks
+   
     for i in range(len(stocks_followed)):
         cur = obtain(stocks_followed[i])
         ret_list.insert(len(ret_list), cur)
