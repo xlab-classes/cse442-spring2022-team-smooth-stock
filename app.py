@@ -8,7 +8,6 @@ import requests
 import smtplib
 import time
 # import io
-import discord
 from discord import Webhook, RequestsWebhookAdapter
 
 
