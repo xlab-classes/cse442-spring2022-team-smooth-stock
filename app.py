@@ -59,7 +59,6 @@ def sanitize(str):
         return store
     return a
 
-
 @app.route('/loginpage')
 @app.route('/',methods =["GET", "POST"])
 def login():
@@ -168,13 +167,13 @@ def obtain(ticker):
     res2 = str(res1)
     res3 = res2[0:6]
     res4 = res3 + "%"
-    stock_information(name,i_price, res4)
 
     ret.insert(2, res4)
 
     #res4 is the percent change, #namefinal is the final name, #price is the current price of the stock
 
     return ret
+
 
 def sendEmailNotification(sender_to, message):
    gmail_user = 'smoothstocks1@gmail.com'
@@ -198,21 +197,19 @@ def sendEmailNotification(sender_to, message):
       print ("Something went wrong….",ex)
 
 
-def notifyUsers(stock, name, username,cursor, newprice, plusminus):
-   if stock == name:
-      cursor.execute("SELECT email, username FROM userdata")
-      myresults = cursor.fetchall()
+def notifyUsers(username,cursor, message):
+   cursor.execute("SELECT email, username FROM userdata")
+   myresults = cursor.fetchall()
 
-      for s in myresults:
-         print(s[1])
-         if username==s[1]:
-            print(s[0])
-            sendEmailNotification(s[0], stock+" price change!\n"+"New price: "+str(newprice)+"\n"+"Change By: "+str(plusminus))
-            discord_notity(stock+" price change!\n"+"New price: "+str(newprice)+"\n"+"Change By: "+str(plusminus))
-            return True
+   for s in myresults:
+      print(s[1])
+      if username==s[1]:
+         print(s[0])
+         sendEmailNotification(s[0], message)
+         return True
    return False
 
-def stock_information(name, newprice, plusminus):
+def stock_information(username):
    mydb = mysql.connector.connect(
          host="oceanus.cse.buffalo.edu",
          user="dtan2",
@@ -226,14 +223,18 @@ def stock_information(name, newprice, plusminus):
 
    for x in myresult:
       arr_stock = x[1].split(", ")
-      username = x[0]
-      for stock in arr_stock:
-          if notifyUsers(stock, name, username, cursor, newprice, plusminus):
-            break
+      if username == x[0]:
+         for stock in arr_stock:
+            s = obtain(stock)
+            print(s)
+            notifyUsers(username, cursor, stock+" price change!\n"+"New price: "+str(s[1])+"\n"+"Change By: "+str(s[2]))
+            discord_notity("**This is just a test** price change!\n"+"New price: "+str(s[1])+"\n"+"Change By: "+str(s[2]))
+
+         return
    # cursor.execute("SELECT username, email FROM userdata")
 
 
-def news_information(name, message):
+def news_information(username, message):
    mydb = mysql.connector.connect(
          host="oceanus.cse.buffalo.edu",
          user="dtan2",
@@ -247,10 +248,10 @@ def news_information(name, message):
 
    for x in myresult:
       arr_stock = x[1].split(", ")
-      username = x[0]
-      for stock in arr_stock:
-          if notifyUsers(stock, name, username, cursor, "", message):
-            break
+      if username == x[0]:
+         for stock in arr_stock:
+            notifyUsers(username, cursor, message)
+         return
 
 def discord_notity(message):
     url = "https://discord.com/api/webhooks/950491418491752448/ZKjXE4laBmFGZxbls5cpZhZ3lbqiO8DXR6S9UweEQ_uowDXeh2kBmnflT9nQh6sJq47K"
@@ -260,17 +261,19 @@ def discord_notity(message):
 
 #discord_notity("test")
 
-
 @app.route('/notify', methods=['GET','POST'])
 @login_required
 def return_notify_page():
+   
+   current_user = session.get('username')
 
-   stock_information('NVDA', 214.82, 3.23)
-   news_information('NVDA', "")
+   stock_information(current_user)
+   news_information(current_user, "This is just a test. No news yet")
+   discord_notity('NVDA'+"This is just a test. No news yet")
 
-   if request.method == 'POST':
-      to = request.form["newemail"]
-      email_message = ""
+   # if request.method == 'POST':
+   #    to = request.form["newemail"]
+   #    email_message = ""
 
    return render_template('notify.html')
    
