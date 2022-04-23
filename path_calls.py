@@ -7,6 +7,8 @@ from bs4 import BeautifulSoup
 import requests
 import mysql.connector
 import json
+import smtplib
+#from discord import SyncWebhook
 import xml.etree.ElementTree as ET
 
 
