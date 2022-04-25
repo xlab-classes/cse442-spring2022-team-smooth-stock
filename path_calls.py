@@ -20,6 +20,7 @@ def login(request):
     password = request.form.get("password")
     errorlist = ""
 
+    mydb.reconnect() #reconnection to server
     mycursor = mydb.cursor()
     sql = "SELECT * FROM userdata WHERE username = %s"
     mycursor.execute(sql,[username])
@@ -66,6 +67,7 @@ def create_account(request):
     if not any(x.islower() for x in password) :
         errorlist += ", no lowercase characters"
 
+    mydb.reconnect()  # reconnection to server
     mycursor = mydb.cursor()
     sql = "SELECT * FROM userdata WHERE username = %s"
     mycursor.execute(sql,[username])

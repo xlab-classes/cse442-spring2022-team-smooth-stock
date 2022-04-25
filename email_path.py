@@ -35,6 +35,7 @@ def reset_email():
     print("HEre?")
     if form.validate_on_submit():
         print("Here1?")
+        mydb.reconnect()  # reconnection to server
         mycursor = mydb.cursor()
         sql = "SELECT * FROM userdata WHERE email = %s"
         mycursor.execute(sql, [form.email.data])
@@ -58,6 +59,7 @@ def token_reset(token):
     form = ResetPasswordForm()
 
     if form.validate_on_submit():
+        mydb.reconnect()  # reconnection to server
         mycursor = mydb.cursor()
         sql = "SELECT * FROM userdata WHERE email = %s"
         mycursor.execute(sql, [email])
