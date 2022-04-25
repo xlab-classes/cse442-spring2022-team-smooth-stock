@@ -176,8 +176,12 @@ def follow():
     sql = "SELECT stocks FROM saved_stocks WHERE username = %s"
     cursor.execute(sql, [current_user])
     record = cursor.fetchone()
-    print("stocks followed ->", record[0])
-    stocks_followed = record[0]
+
+    if (record != None) :
+        print("stocks followed ->", record[0])
+        stocks_followed = record[0]
+    else :
+        stocks_followed = ""
 
     # IF stocks_followed is an empty string
     if(stocks_followed == ""):
@@ -312,9 +316,11 @@ def return_discover_template_page(symbol):
     sql = "SELECT stocks FROM saved_stocks WHERE username = %s"
     cursor.execute(sql, [current_user])
     record = cursor.fetchone()
-    print("stocks followed ->", record[0])
-    stocks_followed = record[0]
-
+    if(record != None):
+        print("stocks followed ->", record[0])
+        stocks_followed = record[0]
+    else:
+        stocks_followed = ""
     # If company_symbol is in stocks_followed
     if(company_symbol in stocks_followed):
 
@@ -371,11 +377,12 @@ def get_user_stocks(username):
         password="50271130",
         database="cse442_2022_spring_team_q_db"
     )
-    username = "fakeuser" #set for testing #77
     cursor = db.cursor()
     saved_stocks_query = "SELECT stocks FROM saved_stocks WHERE username = %s"
     saved_stocks_params = [username]
     cursor.execute(saved_stocks_query, saved_stocks_params)
+
+
     result = cursor.fetchone()[0]
     stocks = str.split(result, ', ')
     return stocks
@@ -389,6 +396,5 @@ def ticker_to_stock_name(ticker):
         return "microsoft"
     else:
         return "not implemented"
-
 
 
