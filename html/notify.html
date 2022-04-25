@@ -22,7 +22,13 @@
 		<div class="ui">
 			
 			<div class="info">
-				<div class="tba">User info</div>
+				<div class="tba">
+					<h1>User info:</h1>
+					{% if error %}
+   					 <p class=error>{{ error }}
+						 {% endif %}
+					 </p>
+				</div>
 			</div>
 			
 			<div class="setting">
@@ -37,7 +43,7 @@
 				
 
 
-				<form action="/notify" enctype="multipart/form-data id="send_email" method="POST">
+				<form action="/notify" enctype="multipart/form-data" id="send_email" method="POST">
 
 					<input id="textbox_2" name="newemail" type="text" placeholder="Enter Email" >
 					<input type="submit" value="Set Email"></input>

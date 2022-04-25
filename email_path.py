@@ -32,9 +32,8 @@ def send_email(subject, recipients, html_body):
 
 def reset_email():
     form = ResetEmailForm()
-    print("HEre?")
     if form.validate_on_submit():
-        print("Here1?")
+
         mydb.reconnect()  # reconnection to server
         mycursor = mydb.cursor()
         sql = "SELECT * FROM userdata WHERE email = %s"
@@ -45,7 +44,7 @@ def reset_email():
             return render_template('password_reset.html', form=form, error="Invalid email!")
         print("Email to send",user[2])
         send_reset_link(user[2])
-        return render_template('LoginPage.html', error = "Reset password email sent")
+        return render_template('password_reset.html',form=form, error = "Reset password email sent! If you didn't receive an email enter your email again and press send.")
 
     return render_template('password_reset.html', form=form)
 

@@ -266,7 +266,7 @@ def discord_notity(message):
 def return_notify_page():
    
    current_user = session.get('username')
-
+   stocks = path_calls.get_user_stocks(current_user)
    stock_information(current_user)
    news_information(current_user, "This is just a test. No news yet")
    discord_notity('NVDA'+"This is just a test. No news yet")
@@ -274,8 +274,10 @@ def return_notify_page():
    # if request.method == 'POST':
    #    to = request.form["newemail"]
    #    email_message = ""
+   if stocks != "" or None:
+       stocks = "Followed stocks: " + ", ".join(stocks) + "."
 
-   return render_template('notify.html')
+   return render_template('notify.html',error=stocks)
    
 
 @app.route('/discover')
