@@ -1,6 +1,7 @@
 {
     "dependencies": {
         "amdefine": ">=0.1.0",
-        "discord": "^0.8.2"
+        "discord": "^0.8.2",
+        "threading": "^0.0.2"
     }
 }

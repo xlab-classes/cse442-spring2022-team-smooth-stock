@@ -1,3 +1,4 @@
+from concurrent.futures import thread
 from flask import Flask, render_template, request, session
 from flask_login import LoginManager, login_required, logout_user
 from mysql.connector import connect
@@ -226,9 +227,10 @@ def stock_information(username):
       if username == x[0]:
          for stock in arr_stock:
             s = obtain(stock)
-            print(s)
-            notifyUsers(username, cursor, stock+" price change!\n"+"New price: "+str(s[1])+"\n"+"Change By: "+str(s[2]))
-            discord_notity("**This is just a test** price change!\n"+"New price: "+str(s[1])+"\n"+"Change By: "+str(s[2]))
+            print(s[2].split('.')[0])
+            if abs(int(s[2].split('.')[0]))>0:
+               notifyUsers(username, cursor, stock+" price change!\n"+"New price: "+str(s[1])+"\n"+"Change By: "+str(s[2]))
+               discord_notity(stock+" price change!\n"+"New price: "+str(s[1])+"\n"+"Change By: "+str(s[2]))
 
          return
    # cursor.execute("SELECT username, email FROM userdata")
@@ -260,24 +262,74 @@ def discord_notity(message):
 
 
 #discord_notity("test")
+import threading
+def check_prices(user):
+   
+   threa = threading.Timer(3600,startTimer,(user,))
+   threa.daemon = True
+   threa.start()
+   #discord_notity('NVDA'+"This is just a test. No news yet")
+   #runs every hours
+
+
+def startTimer(user):
+   
+   stock_information(user)
+   check_prices(user)
+
+
 
 @app.route('/notify', methods=['GET','POST'])
 @login_required
 def return_notify_page():
-   
-   current_user = session.get('username')
-   stocks = path_calls.get_user_stocks(current_user)
-   stock_information(current_user)
-   news_information(current_user, "This is just a test. No news yet")
-   discord_notity('NVDA'+"This is just a test. No news yet")
+   current_user = ""
+   if session.get('username') != None:
+      current_user = session.get('username')
 
-   # if request.method == 'POST':
-   #    to = request.form["newemail"]
-   #    email_message = ""
+   check_prices(current_user)
+
+   mydb = mysql.connector.connect(
+         host="oceanus.cse.buffalo.edu",
+         user="dtan2",
+         password="50278774",
+         database="cse442_2022_spring_team_q_db"
+      )
+   mycursor = mydb.cursor()
+   stocks = path_calls.get_user_stocks(current_user)
+
+   #   current_user = session.get('username')
+   #while
+   #stock_information(current_user)
+   #news_information(current_user, "This is just a test. No news yet")
+   #discord_notity('NVDA'+"This is just a test. No news yet")
+
+   sql = "SELECT email FROM userdata WHERE username = %s"
+   mycursor.execute(sql, [current_user])
+   user = mycursor.fetchone()
+   print(user[0])
+
+
+   if request.method == 'POST':
+       new_email = request.form["newemail"]
+       mydb.reconnect()  # reconnection to server
+       mycursor = mydb.cursor()
+       print("new email "+new_email)
+       sql = 'UPDATE userdata SET email = %s WHERE username = %s'
+       val = (new_email,current_user)
+       mycursor.execute(sql,val)
+       mydb.commit()
+       if stocks != "" or None:
+         stocks = "Followed stocks: " + ", ".join(stocks) + "."
+       return render_template('notify.html',error=stocks, curr_email=new_email)
+
+      #update email
+
+
+
    if stocks != "" or None:
        stocks = "Followed stocks: " + ", ".join(stocks) + "."
 
-   return render_template('notify.html',error=stocks)
+   return render_template('notify.html',error=stocks, curr_email=user[0])
    
 
 @app.route('/discover')
@@ -456,5 +508,9 @@ def user_loader(user_id):
          return x
    return DS.User()
 
+
+
+
+
 if __name__ == '__main__':
-   app.run()
+   app.run(threaded=True)
