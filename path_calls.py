@@ -170,7 +170,6 @@ def follow():
 
     # Get the current user from the session
     current_user = session.get('username')
-    print("current_user = ", current_user)
 
     # Fetch current_user's record from saved_stocks Tabke
     sql = "SELECT stocks FROM saved_stocks WHERE username = %s"
@@ -310,7 +309,6 @@ def return_discover_template_page(symbol):
 
     # Get the current user from the session
     current_user = session.get('username')
-    print("current_user = ", current_user)
 
     # Fetch current_user's record from saved_stocks Tabke
     sql = "SELECT stocks FROM saved_stocks WHERE username = %s"
@@ -335,9 +333,17 @@ def return_discover_template_page(symbol):
     # Re-enable Foreign Key Checks 
     sql = "SET FOREIGN_KEY_CHECKS=1"
     cursor.execute(sql)
-        
+
+    news_articles = parse_xml()
+    filtered_news = []
+    for title, link, src in news_articles:
+        lower = title.lower()
+        if symbol in lower or ticker_to_stock_name(symbol.upper()) in lower:
+            filtered_news.append((title, link))
+    print("------FILTERED NEWS------")
+    print(filtered_news)
     # Return html page to be rendered
-    return render_template('discover_template.html', Stock_Name=stock_symbol, Company=company, Current_Stock_Price=current_stock_price, Current_plus_minus=current_plus_minus, Price_History=price_history, Fifty_Two_Week_Range=fifty_two_week_range, Fifty_Day_Average=fifty_day_average, Two_Hundred_Day_Average=two_hundred_day_average, EPS_Current_Year=eps_current_year, Price_EPS_Current_Year=price_eps_current_year, Average_Analyst_Rating=average_analyst_rating, Follow_Button=button_text)
+    return render_template('discover_template.html', Stock_Name=stock_symbol, Company=company, Current_Stock_Price=current_stock_price, Current_plus_minus=current_plus_minus, Price_History=price_history, Fifty_Two_Week_Range=fifty_two_week_range, Fifty_Day_Average=fifty_day_average, Two_Hundred_Day_Average=two_hundred_day_average, EPS_Current_Year=eps_current_year, Price_EPS_Current_Year=price_eps_current_year, Average_Analyst_Rating=average_analyst_rating, Follow_Button=button_text, news=filtered_news)
 
 def sanitize(str):
     count = 0
@@ -382,10 +388,12 @@ def get_user_stocks(username):
     saved_stocks_params = [username]
     cursor.execute(saved_stocks_query, saved_stocks_params)
 
-
-    result = cursor.fetchone()[0]
-    stocks = str.split(result, ', ')
-    return stocks
+    try:
+        result = cursor.fetchone()[0]
+        stocks = str.split(result, ', ')
+        return stocks
+    except:
+        return []
 
 def ticker_to_stock_name(ticker):
     if ticker == "GOOG":

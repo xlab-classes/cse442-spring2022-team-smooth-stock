@@ -48,7 +48,11 @@
             </div>
 
             <!-- Replace this line of the template to display news articles relevant to search stock -->
-            <div class="related-news">Related News Articles<br> {{ Article_1 }} <br> {{ Article_2 }} <br> {{ Article_3 }} </div>
+            <div class="related-news">Related News Articles<br> <ul>
+                {% for each in news %}
+                <li><a href={{ each[1] }}> {{ each[0] }}</a>
+                {% endfor %}
+            </ul> </div>
 
         </div>
               
