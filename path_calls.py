@@ -391,7 +391,10 @@ def get_user_stocks(username):
     try:
         result = cursor.fetchone()[0]
         stocks = str.split(result, ', ')
-        return stocks
+        if len(stocks) == 1 and stocks[0] == "": #empty column returns [''] which will lead to every single news article included
+            return []
+        else:
+            return stocks
     except:
         return []
 
