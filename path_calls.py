@@ -407,12 +407,15 @@ def get_user_stocks(username):
         return []
 
 def ticker_to_stock_name(ticker):
-    if ticker == "GOOG":
+    ticker = ticker.lower()
+    if ticker == "goog":
         return "google"
-    elif ticker == "AAPL":
+    elif ticker == "aapl":
         return "apple"
-    elif ticker == "MSFT":
+    elif ticker == "msft":
         return "microsoft"
+    elif ticker == "twtr":
+        return "twitter" 
     else:
         return "not implemented"
 
