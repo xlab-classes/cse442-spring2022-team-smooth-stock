@@ -11,11 +11,12 @@
         <!-- Add common topbar to Discover/Find Stocks page -->
         <div id = "topbar">
 
-            <button type="button" onclick="alert('Hello world!')">Home</button>
-            <button type="button" onclick="alert('Hello world!')">Discover</button>
-            <button type="button" onclick="alert('Hello world!')">News</button>
-            <button type="button" onclick="alert('Hello world!')">Notification</button>
-            <a href="logout"><button>Logout</button></a>
+            <a href="442"><button  class="block">Stock Data</button></a>
+            <a href="news"><button  class="block">Stock News</button></a>
+            <a href="notify"><button  class="block">Notifications</button></a>
+            <a href="LandingPage"><button class="block">Landing Page</button></a>
+            <a href="loginpage"><button  class="block">Login Page</button></a>
+            <a href="logout"><button  class="block">Logout</button></a>
 
          </div>
 
@@ -48,7 +49,11 @@
             </div>
 
             <!-- Replace this line of the template to display news articles relevant to search stock -->
-            <div class="related-news">Related News Articles<br> {{ Article_1 }} <br> {{ Article_2 }} <br> {{ Article_3 }} </div>
+            <div class="related-news">Related News Articles<br> <ul>
+                {% for each in news %}
+                <li><a href={{ each[1] }}> {{ each[0] }}</a>
+                {% endfor %}
+            </ul> </div>
 
         </div>
               

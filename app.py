@@ -1,4 +1,5 @@
 from concurrent.futures import thread
+from email import message
 from flask import Flask, render_template, request, session
 from flask_login import LoginManager, login_required, logout_user
 from mysql.connector import connect
@@ -335,7 +336,7 @@ def return_notify_page():
 @app.route('/discover')
 @login_required
 def return_discover_page():
-   return render_template('discover.html')
+   return render_template('discover.html', Message="")
 
 @app.route('/logout')
 @login_required
@@ -462,29 +463,6 @@ def token_reset(token):
 @app.route('/reset', methods=["GET", "POST"])
 def reset_email():
     return email_path.reset_email()
-
-
-@app.route('/test_login')
-@login_required
-def test_login():
-   return ("You are logged in!")
-
-@app.route('/db_test3')
-def test_db3():
-   username = ["test1"]
-   mycursor = mydb.cursor()
-   sql = "SELECT * FROM userdata WHERE username = %s"
-   mycursor.execute(sql, username)
-   myresult = mycursor.fetchall()
-
-   if myresult:
-      print("Something",myresult[0][2])
-   else:
-      print("nothing!")
-
-   for x in myresult :
-      print(x)
-   return "view terminal to view databases"
 
 
 @app.route('/db_view_users')
