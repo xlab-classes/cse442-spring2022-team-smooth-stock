@@ -1,4 +1,5 @@
 from concurrent.futures import thread
+from email import message
 from flask import Flask, render_template, request, session
 from flask_login import LoginManager, login_required, logout_user
 from mysql.connector import connect
@@ -335,7 +336,7 @@ def return_notify_page():
 @app.route('/discover')
 @login_required
 def return_discover_page():
-   return render_template('discover.html')
+   return render_template('discover.html', Message="")
 
 @app.route('/logout')
 @login_required
