@@ -28,12 +28,16 @@
    					 <p class=error>{{ error }}
 						 {% endif %}
 					 </p>
+
+					 <br />
+					
+
 				</div>
 			</div>
 			
 			<div class="setting">
 				<div>
-					<a href="https://discord.com/invite/fZfDuYUVh4" target="_blank"><button>Change Discord</button></a>
+					<a href="https://discord.com/invite/fZfDuYUVh4" target="_blank"><button>Link to Discord Server for Notification</button></a>
 				</div>
 				
 				<div> 
@@ -45,8 +49,8 @@
 
 				<form action="/notify" enctype="multipart/form-data" id="send_email" method="POST">
 
-					<input id="textbox_2" name="newemail" type="text" placeholder="Enter Email" >
-					<input type="submit" value="Set Email"></input>
+					<input id="textbox_2" name="newemail" type="text" placeholder="{{curr_email}}" >
+					<input type="submit" value="Change Email"></input>
 				</form>				
 						
 
