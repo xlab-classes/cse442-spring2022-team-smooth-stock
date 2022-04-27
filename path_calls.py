@@ -279,6 +279,14 @@ def return_discover_template_page(symbol):
     # Load response as a dictionary
     dict = json.loads(response.text)
 
+    # Check that quoteResponse is not none
+    if(dict.get('quoteResponse').get('result') == [] or dict.get('quoteResponse').get('result')[0].get('displayName') == None):
+        print("Stock not found in Yahoo Finance API")
+        message = symbol + " stock not found via Yahoo Fincance API. Please search another stock."
+        return render_template("discover.html", Message=message)
+    
+
+
     # Initialize variables stated at beginning of function 
     stock_symbol = dict.get('quoteResponse').get('result')[0].get('symbol')
     company = dict.get('quoteResponse').get('result')[0].get('displayName')
