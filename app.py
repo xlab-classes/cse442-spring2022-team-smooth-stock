@@ -465,29 +465,6 @@ def reset_email():
     return email_path.reset_email()
 
 
-@app.route('/test_login')
-@login_required
-def test_login():
-   return ("You are logged in!")
-
-@app.route('/db_test3')
-def test_db3():
-   username = ["test1"]
-   mycursor = mydb.cursor()
-   sql = "SELECT * FROM userdata WHERE username = %s"
-   mycursor.execute(sql, username)
-   myresult = mycursor.fetchall()
-
-   if myresult:
-      print("Something",myresult[0][2])
-   else:
-      print("nothing!")
-
-   for x in myresult :
-      print(x)
-   return "view terminal to view databases"
-
-
 @app.route('/db_view_users')
 def try_db_connect2():
    cursor = mydb.cursor()
