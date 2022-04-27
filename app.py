@@ -9,7 +9,7 @@ import requests
 import smtplib
 import time
 # import io
-from discord import Webhook, RequestsWebhookAdapter
+#from discord import Webhook, RequestsWebhookAdapter
 
 
 
@@ -230,7 +230,7 @@ def stock_information(username):
             print(s[2].split('.')[0])
             if abs(int(s[2].split('.')[0]))>0:
                notifyUsers(username, cursor, stock+" price change!\n"+"New price: "+str(s[1])+"\n"+"Change By: "+str(s[2]))
-               discord_notity(stock+" price change!\n"+"New price: "+str(s[1])+"\n"+"Change By: "+str(s[2]))
+               #discord_notity(stock+" price change!\n"+"New price: "+str(s[1])+"\n"+"Change By: "+str(s[2]))
 
          return
    # cursor.execute("SELECT username, email FROM userdata")
@@ -255,10 +255,10 @@ def news_information(username, message):
             notifyUsers(username, cursor, message)
          return
 
-def discord_notity(message):
-    url = "https://discord.com/api/webhooks/950491418491752448/ZKjXE4laBmFGZxbls5cpZhZ3lbqiO8DXR6S9UweEQ_uowDXeh2kBmnflT9nQh6sJq47K"
-    webhook = Webhook.from_url(url, adapter=RequestsWebhookAdapter()) # Initializing webhook
-    webhook.send(content=message) # Executing webhook.
+# def discord_notity(message):
+#     url = "https://discord.com/api/webhooks/950491418491752448/ZKjXE4laBmFGZxbls5cpZhZ3lbqiO8DXR6S9UweEQ_uowDXeh2kBmnflT9nQh6sJq47K"
+#     webhook = Webhook.from_url(url, adapter=RequestsWebhookAdapter()) # Initializing webhook
+#     webhook.send(content=message) # Executing webhook.
 
 
 #discord_notity("test")
