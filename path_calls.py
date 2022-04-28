@@ -278,14 +278,53 @@ def return_discover_template_page(symbol):
     # Load response as a dictionary
     dict = json.loads(response.text)
 
-    # Check that quoteResponse is not none
-    if(dict.get('quoteResponse').get('result') == [] or dict.get('quoteResponse').get('result')[0].get('displayName') == None):
-        print("Stock not found in Yahoo Finance API")
-        message = symbol + " stock not found via Yahoo Fincance API. Please search another stock."
-        return render_template("discover.html", Message=message)
-    
+    # Initialize all variables to be not found
+    stock_symbol = "Stock Symbol Not Found"
+    company = "Company Not Found"
+    current_stock_price = "Current Stock Price Not Found"
+    current_plus_minus = "Current Plus/Minus Not Found"
+    price_history = "Price History Not Found"
+    fifty_two_week_range = "52-Week Range Not Found"
+    fifty_day_average = "50-Day Average Not Found"
+    two_hundred_day_average = "200-Day Average Not Found"
+    eps_current_year = "EPS Current Year Not Found"
+    price_eps_current_year = "Price EPS Current Year Not Found"
+    average_analyst_rating = "Average Analyst Rating Not Found"
+
+    # Reinitialiaze any variables that are not None
+    if(dict.get('quoteResponse').get('result')[0].get('symbol') is not None):
+        stock_symbol = dict.get('quoteResponse').get('result')[0].get('symbol')
+
+    if(dict.get('quoteResponse').get('result')[0].get('displayName') is not None):
+        company = dict.get('quoteResponse').get('result')[0].get('displayName')
+        price_history = company + "'s Price History"
+
+    if(str(dict.get('quoteResponse').get('result')[0].get('regularMarketPrice')) is not None):
+        current_stock_price = str(dict.get('quoteResponse').get('result')[0].get('regularMarketPrice'))
+
+    if(str(dict.get('quoteResponse').get('result')[0].get('regularMarketChangePercent')) is not None):
+        current_plus_minus = str(dict.get('quoteResponse').get('result')[0].get('regularMarketChangePercent'))
+
+    if(dict.get('quoteResponse').get('result')[0].get('fiftyTwoWeekRange') is not None):
+        fifty_two_week_range = "52-Week Range: " + dict.get('quoteResponse').get('result')[0].get('fiftyTwoWeekRange')
+
+    if(str(dict.get('quoteResponse').get('result')[0].get('fiftyDayAverage')) is not None):
+        fifty_day_average = "50 Day average: " + str(dict.get('quoteResponse').get('result')[0].get('fiftyDayAverage'))
+
+    if(str(dict.get('quoteResponse').get('result')[0].get('twoHundredDayAverage')) is not None):
+        two_hundred_day_average = " 200 Day Average: " + str(dict.get('quoteResponse').get('result')[0].get('twoHundredDayAverage'))
+
+    if(str(dict.get('quoteResponse').get('result')[0].get('epsCurrentYear')) is not None):
+        eps_current_year = " EPS Current Year: " + str(dict.get('quoteResponse').get('result')[0].get('epsCurrentYear'))
+
+    if(str(dict.get('quoteResponse').get('result')[0].get('priceEpsCurrentYear')) is not None):
+        price_eps_current_year = " Price EPS Current Year: " + str(dict.get('quoteResponse').get('result')[0].get('priceEpsCurrentYear'))
+
+    if(dict.get('quoteResponse').get('result')[0].get('averageAnalystRating') is not None):
+        average_analyst_rating = " Average Analyst Rating: " + dict.get('quoteResponse').get('result')[0].get('averageAnalystRating')
 
 
+    """
     # Initialize variables stated at beginning of function 
     stock_symbol = dict.get('quoteResponse').get('result')[0].get('symbol')
     company = dict.get('quoteResponse').get('result')[0].get('displayName')
@@ -298,6 +337,7 @@ def return_discover_template_page(symbol):
     eps_current_year = " EPS Current Year: " + str(dict.get('quoteResponse').get('result')[0].get('epsCurrentYear'))
     price_eps_current_year = " Price EPS Current Year: " + str(dict.get('quoteResponse').get('result')[0].get('priceEpsCurrentYear'))
     average_analyst_rating = " Average Analyst Rating: " + dict.get('quoteResponse').get('result')[0].get('averageAnalystRating')
+    """
 
     """ Check if User is already following the stock they searched """
     # Connect to database
