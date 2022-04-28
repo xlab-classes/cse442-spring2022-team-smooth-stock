@@ -3,7 +3,7 @@
 <head>
  <meta charset="UTF-8">
     <meta http-equiv="refresh" content="4">
- <title>442 title page</title>
+ <title>Energy</title>
 
 
 <style>
@@ -70,18 +70,15 @@ function loadDoc() {
 <!--       -->
 </head>
 <body >
+
 <div id = "topbar">
 
-		
-
-		<a href="LandingPage"><button class = "block">Back</button></a>
-
-		
-		<a href="discover"><button  class="block">Discover Stocks</button></a>
-		<a href="news"><button  class="block">Stock News</button></a>
-		<a href="notify"><button  class="block">Notifications</button></a>
- <a href="442"><button class = "block>Prev List</button></a>
-		
+	
+  <a href="LandingPage">Back<button>Logout</button></a>
+  <a href="discover"><button>Discover</button></a>
+  <a href="news"><button>News</button></a>
+  <a href="notify"><button>Notifications</button></a>
+  <a href="442"><button>Prev</button></a>
 
 </div>
 
