@@ -30,7 +30,8 @@
 					 </p>
 
 					 <br />
-					
+					 <p class=percent>{{ notity_percent }}</p>
+					 <p class=last_note>{{ last_note }}</p>
 
 				</div>
 			</div>
@@ -40,21 +41,22 @@
 					<a href="https://discord.com/invite/fZfDuYUVh4" target="_blank"><button>Link to Discord Server for Notification</button></a>
 				</div>
 				
-				<div> 
-					<button class="but1">Notify when price change 5%</button>
-					<button class="but2">Notify when price change 10%</button> 
+				<div>
+					
 				</div>
 				
 
 
 				<form action="/notify" enctype="multipart/form-data" id="send_email" method="POST">
-
+					<input type="submit" name="submit_button" value="Notify when price change .5%">
+					<br />
+					<input type="submit" name="submit_button" value="Notify when price change 1%">
+					<br />
 					<input id="textbox_2" name="newemail" type="text" placeholder="{{curr_email}}" >
-					<input type="submit" value="Change Email"></input>
+					<input type="submit" name="submit_button" value="Change Email"></input>
 				</form>				
 						
 
-				</div>
 			</div>
 		</div>
 	</body>

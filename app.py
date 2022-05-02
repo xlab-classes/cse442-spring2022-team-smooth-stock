@@ -204,14 +204,12 @@ def notifyUsers(username,cursor, message):
    myresults = cursor.fetchall()
 
    for s in myresults:
-      print(s[1])
       if username==s[1]:
-         print(s[0])
          sendEmailNotification(s[0], message)
          return True
    return False
 
-def stock_information(username):
+def stock_information(username, num):
    mydb = mysql.connector.connect(
          host="oceanus.cse.buffalo.edu",
          user="dtan2",
@@ -228,8 +226,8 @@ def stock_information(username):
       if username == x[0]:
          for stock in arr_stock:
             s = obtain(stock)
-            print(s[2].split('.')[0])
-            if abs(int(s[2].split('.')[0]))>0:
+            price_change = (abs(float(s[2].split('%')[0])))
+            if price_change>num:
                notifyUsers(username, cursor, stock+" price change!\n"+"New price: "+str(s[1])+"\n"+"Change By: "+str(s[2]))
                #discord_notity(stock+" price change!\n"+"New price: "+str(s[1])+"\n"+"Change By: "+str(s[2]))
 
@@ -264,30 +262,27 @@ def news_information(username, message):
 
 #discord_notity("test")
 import threading
-def check_prices(user):
-   
-   threa = threading.Timer(3600,startTimer,(user,))
-   threa.daemon = True
-   threa.start()
+def check_prices(user, num, count):
+   if count < 5:
+      threa = threading.Timer(60,startTimer,(user, num, count, ))
+      threa.daemon = True
+      threa.start()
    #discord_notity('NVDA'+"This is just a test. No news yet")
    #runs every hours
 
 
-def startTimer(user):
-   
-   stock_information(user)
-   check_prices(user)
+def startTimer(user, num, count):
+   print(count)
+   stock_information(user, num)
+   check_prices(user, num, count+1)
 
 
 
 @app.route('/notify', methods=['GET','POST'])
 @login_required
 def return_notify_page():
-   current_user = ""
-   if session.get('username') != None:
-      current_user = session.get('username')
-
-   check_prices(current_user)
+   
+   current_user = session.get('username')
 
    mydb = mysql.connector.connect(
          host="oceanus.cse.buffalo.edu",
@@ -298,39 +293,43 @@ def return_notify_page():
    mycursor = mydb.cursor()
    stocks = path_calls.get_user_stocks(current_user)
 
-   #   current_user = session.get('username')
-   #while
-   #stock_information(current_user)
-   #news_information(current_user, "This is just a test. No news yet")
-   #discord_notity('NVDA'+"This is just a test. No news yet")
 
    sql = "SELECT email FROM userdata WHERE username = %s"
    mycursor.execute(sql, [current_user])
    user = mycursor.fetchone()
-   print(user[0])
-
+   percent = ""
+   new_email = user[0]
 
    if request.method == 'POST':
-       new_email = request.form["newemail"]
-       mydb.reconnect()  # reconnection to server
-       mycursor = mydb.cursor()
-       print("new email "+new_email)
-       sql = 'UPDATE userdata SET email = %s WHERE username = %s'
-       val = (new_email,current_user)
-       mycursor.execute(sql,val)
-       mydb.commit()
-       if stocks != "" or None:
-         stocks = "Followed stocks: " + ", ".join(stocks) + "."
-       return render_template('notify.html',error=stocks, curr_email=new_email)
+
+      if request.form['submit_button'] == 'Notify when price change .5%':
+         check_prices(current_user, .5, 0)
+         percent = "Currently notifying at .5%"
+      elif request.form['submit_button'] == 'Notify when price change 1%':
+         check_prices(current_user, 1, 0)
+         percent = "Currently notifying at 1%"
+      else:
+         if request.form["newemail"] != "":
+            new_email = request.form["newemail"]
+            mydb.reconnect()  # reconnection to server
+            mycursor = mydb.cursor()
+            print("new email "+new_email)
+            sql = 'UPDATE userdata SET email = %s WHERE username = %s'
+            val = (new_email,current_user)
+            mycursor.execute(sql,val)
+            mydb.commit()
+      if stocks != "" or None:
+        stocks = "Followed stocks: " + ", ".join(stocks) + "."
+      print(new_email)
+      return render_template('notify.html',error=stocks, curr_email=new_email, notity_percent=percent)
 
       #update email
+   else:
 
+      if stocks != "" or None:
+         stocks = "Followed stocks: " + ", ".join(stocks) + "."
 
-
-   if stocks != "" or None:
-       stocks = "Followed stocks: " + ", ".join(stocks) + "."
-
-   return render_template('notify.html',error=stocks, curr_email=user[0])
+      return render_template('notify.html',error=stocks, curr_email=user[0])
    
 
 @app.route('/discover')
