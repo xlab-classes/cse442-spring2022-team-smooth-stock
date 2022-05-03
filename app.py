@@ -100,6 +100,14 @@ def create_account() :
    elif request.method == "POST":  # post requst for form
       return path_calls.create_account(request)
 
+@app.route('/delete_account',methods =["GET", "POST"])
+def delete_account() :
+   if request.method == "GET" :  # get request for html
+      return render_template("delete_account.html")
+   elif request.method == "POST":  # post requst for form
+      return path_calls.delete_account(request)
+
+
 @app.route('/LandingPage')
 @login_required
 def return_landing_page():

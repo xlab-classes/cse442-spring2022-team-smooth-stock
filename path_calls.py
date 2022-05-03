@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, session, redirect, url_for
-from flask_login import login_user
+from flask_login import login_user,logout_user
 import hashlib
 from app import DS
 from app import mydb, os
@@ -118,6 +118,39 @@ def create_account(request):
 
     errorlist = "Account created!"
     return render_template('LoginPage.html', error = errorlist)
+
+def delete_account(request):
+    username = session.get('username')
+    delete = request.form.get("delete")
+    password = request.form.get("password")
+    errorlist = ""
+
+    if delete != "DELETE":
+        print(delete,"Delete not delete")
+        errorlist += "\"DELETE\" not entered correctly!\n"
+
+    mydb.reconnect()  # reconnection to server
+    mycursor = mydb.cursor()
+    sql = "SELECT * FROM userdata WHERE username = %s"
+    mycursor.execute(sql, [username])
+    user = mycursor.fetchone()
+
+    salt = user[4].encode('latin1')  # 4 is salt
+    hashed_password = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, 10000).decode('latin1')
+    realpassword = user[3]  # 3 is password
+
+    if realpassword != hashed_password:
+        errorlist += "Error, wrong password."
+        return render_template("delete_account.html", error=errorlist)
+    else:
+
+        sql = "DELETE FROM userdata WHERE username = %s"
+        mycursor.execute(sql, [username])
+        sql = "DELETE FROM saved_stocks WHERE username = %s"
+        mycursor.execute(sql,[username])
+        mydb.commit()
+        logout_user()
+        return render_template('LoginPage.html', error="Account of "+username+" has been deleted.")
 
 def save_yahoo_xml(url):
         response = requests.get(url)

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+  background-color: #686968;
+  text-align: center
+}
+
+h1{
+  text-align: center
+}
+
+box{
+  text-align: center
+}
+
+form{
+    text-align: center
+}
+a href{
+  text-align: center
+}
+
+.block {
+ margin: auto;
+  display: block;
+  width: 15%;
+  border: none;
+  background-color: #454747;
+  border: 3px solid #2f2f30;
+  color: white;
+  padding: 14px 28px;
+  font-size: 16px;
+  text-align: center;
+}
+
+.block1 {
+ margin: auto;
+  display: block;
+  width: 80%;
+  border: none;
+  background-color: #454747;
+  border: 3px solid #2f2f30;
+  color: white;
+  padding: 14px 28px;
+  font-size: 16px;
+  cursor: pointer;
+  text-align: center;
+}
+
+</style>
+</head>
+<body>
+
+<div class="box">
+{% if error %}
+    <p class=error>{{ error }}
+  {% endif %}
+
+ </div>
+<h1 style="font-family:verdana;">Delete Account</h1>
+<h3 style="font-family:verdana;">To delete account enter the info below:</h3>
+<form action="/delete_account" method="POST" class="block">
+  <label for="delete">Type "DELETE" in the box</label><br>
+  <input type="text" id="delete" name="delete"><br>
+  <label for="password">Enter password in the box:</label><br>
+  <input type="password" id="password" name="password"><br><br>
+  <input type="submit" value="Confirm Account Deletion  " class ="block1">
+</form>
+
+<br>
+
+<a href="/LandingPage" class = "block">Back to Landing page</a>
+
+
+</body>
+</html>
