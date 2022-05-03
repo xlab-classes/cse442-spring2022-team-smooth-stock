@@ -126,7 +126,6 @@ def delete_account(request):
     errorlist = ""
 
     if delete != "DELETE":
-        print(delete,"Delete not delete")
         errorlist += "\"DELETE\" not entered correctly!\n"
 
     mydb.reconnect()  # reconnection to server
