@@ -6,19 +6,16 @@
         <title>Smooth Stock: Find Stock</title>
 
         <!-- Link Page to CSS style sheet -->
-        <link rel="stylesheet" type="text/css" href="discover.css"/> 
+        <link rel="stylesheet" type="text/css" href="discover.css"/>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='tb-style.css') }}" />
 
         <!-- Add common topbar to Discover/Find Stocks page -->
         <div id = "topbar">
-
-            <a href="442"><button  class="block">Stock Data</button></a>
-            <a href="news"><button  class="block">Stock News</button></a>
-            <a href="notify"><button  class="block">Notifications</button></a>
-            <a href="LandingPage"><button class="block">Landing Page</button></a>
-            <a href="loginpage"><button  class="block">Login Page</button></a>
-            <a href="logout"><button  class="block">Logout</button></a>
-
-         </div>
+            <a class="left" href="LandingPage"><button>Back</button></a>
+            <a href="discover"><button>Discover</button></a>
+            <a href="news"><button>News</button></a>
+            <a href="notify"><button>Notifications</button></a>
+          </div>
 
         <!-- Add a break to give some space between button and search bar -->
         <br><br>
@@ -102,16 +99,6 @@
 body {
     background-color: gray;
 }
-
-/* Style for top bar*/
-div#topbar {
-
-  width:100%; 
-  margin:auto; 
-  border:15px groove #CCCC99; 
-  background-color:blue; 
-  text-align:center;
-  }
 
 /* Update flex-box style */
 .flex-container {

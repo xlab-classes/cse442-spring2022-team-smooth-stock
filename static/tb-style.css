@@ -1,0 +1,12 @@
+div#topbar {
+
+    width:100%; 
+    margin:auto; 
+    border:15px groove #2f2f30; 
+    background-color:#454747; 
+    text-align:center;
+    }
+
+.left {
+    float:left
+}

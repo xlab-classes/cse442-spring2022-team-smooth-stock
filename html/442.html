@@ -4,16 +4,18 @@
  <meta charset="UTF-8">
  <title>442 title page</title>
 
+ <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='tb-style.css') }}" />
+
 
 <style>
-div#topbar {
+/* div#topbar {
 
 width:100%; 
 margin:auto; 
 border:15px groove #CCCC99; 
 background-color:blue; 
 text-align:center;
-}
+} */
 
 #thistab{
   font-family: arial, sans-serif;
@@ -65,15 +67,10 @@ function loadDoc() {
 <body>
 
 <div id = "topbar">
-
-
-	
-  <a href="LandingPage"><button>Back</button></a>
+  <a class="left" href="LandingPage"><button>Back</button></a>
   <a href="discover"><button>Discover</button></a>
   <a href="news"><button>News</button></a>
   <a href="notify"><button>Notifications</button></a>
-	
-
 </div>
 
 
