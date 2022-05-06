@@ -147,7 +147,7 @@ def obtain(ticker):
     
 
     #buildthe display name
-    idx_display_name = res_utf.find("displayName")
+    idx_display_name = res_utf.find("longName")
     build_display_name = ""
     counter2 = idx_display_name
     while(res_utf[counter2:counter2+1]!= ","):
