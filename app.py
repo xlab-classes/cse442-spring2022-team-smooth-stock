@@ -129,7 +129,7 @@ def obtain(ticker):
 
     #build the price of the stock
     ask = "ask"
-    idx_ask = res_utf.find(ask)
+    idx_ask = res_utf.find("ask")
     build_price = ""
     counter = idx_ask
     while(res_utf[counter:counter+1] != ","):
