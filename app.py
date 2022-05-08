@@ -1,5 +1,6 @@
 from concurrent.futures import thread
 from email import message
+from turtle import st
 from flask import Flask, render_template, request, session
 from flask_login import LoginManager, login_required, logout_user
 from mysql.connector import connect
@@ -198,18 +199,8 @@ def sendEmailNotification(sender_to, message):
    except Exception as ex:
       print ("Something went wrong….",ex)
 
-
-def notifyUsers(username,cursor, message):
-   cursor.execute("SELECT email, username FROM userdata")
-   myresults = cursor.fetchall()
-
-   for s in myresults:
-      if username==s[1]:
-         sendEmailNotification(s[0], message)
-         return True
-   return False
-
-def stock_information(username, num):
+   
+def stock_information(username, num, email):
    mydb = mysql.connector.connect(
          host="oceanus.cse.buffalo.edu",
          user="dtan2",
@@ -217,42 +208,38 @@ def stock_information(username, num):
          database="cse442_2022_spring_team_q_db"
       )
    cursor = mydb.cursor()
+   sql = "SELECT stocks FROM saved_stocks WHERE username = %s"
+   cursor.execute(sql, [username])
+   stock = cursor.fetchone()
 
-   cursor.execute("SELECT username, stocks FROM saved_stocks")
-   myresult = cursor.fetchall()
+   arr_stock = (stock[0].split(', '))
+   
+   
+   for ss in arr_stock:
+      s = obtain(ss)
+      price_change = (abs(float(s[2].split('%')[0])))
+      if price_change>num:
+         sendEmailNotification(email, ss+" price change!\n"+"New price: "+str(s[1])+"\n"+"Change By: "+str(s[2]))
+         #discord_notity(stock+" price change!\n"+"New price: "+str(s[1])+"\n"+"Change By: "+str(s[2]))
 
-   for x in myresult:
-      arr_stock = x[1].split(", ")
-      if username == x[0]:
-         for stock in arr_stock:
-            s = obtain(stock)
-            price_change = (abs(float(s[2].split('%')[0])))
-            if price_change>num:
-               notifyUsers(username, cursor, stock+" price change!\n"+"New price: "+str(s[1])+"\n"+"Change By: "+str(s[2]))
-               #discord_notity(stock+" price change!\n"+"New price: "+str(s[1])+"\n"+"Change By: "+str(s[2]))
-
-         return
+         
    # cursor.execute("SELECT username, email FROM userdata")
 
 
-def news_information(username, message):
+def news_information(username, email):
    mydb = mysql.connector.connect(
          host="oceanus.cse.buffalo.edu",
          user="dtan2",
          password="50278774",
          database="cse442_2022_spring_team_q_db"
       )
+   message = ""
    cursor = mydb.cursor()
+   sql = "SELECT stocks FROM saved_stocks WHERE username = %s"
+   cursor.execute(sql, [username])
+   stock = cursor.fetchone()
 
-   cursor.execute("SELECT username, stocks FROM saved_stocks")
-   myresult = cursor.fetchall()
-
-   for x in myresult:
-      arr_stock = x[1].split(", ")
-      if username == x[0]:
-         for stock in arr_stock:
-            notifyUsers(username, cursor, message)
-         return
+   sendEmailNotification(email, message)
 
 # def discord_notity(message):
 #     url = "https://discord.com/api/webhooks/950491418491752448/ZKjXE4laBmFGZxbls5cpZhZ3lbqiO8DXR6S9UweEQ_uowDXeh2kBmnflT9nQh6sJq47K"
@@ -262,19 +249,19 @@ def news_information(username, message):
 
 #discord_notity("test")
 import threading
-def check_prices(user, num, count):
+def check_prices(user, num, count, email):
    if count < 5:
-      threa = threading.Timer(60,startTimer,(user, num, count, ))
+      threa = threading.Timer(5,startTimer,(user, num, count,email, ))
       threa.daemon = True
       threa.start()
    #discord_notity('NVDA'+"This is just a test. No news yet")
    #runs every hours
 
 
-def startTimer(user, num, count):
+def startTimer(user, num, count, email):
    print(count)
-   stock_information(user, num)
-   check_prices(user, num, count+1)
+   stock_information(user, num, email)
+   check_prices(user, num, count+1, email)
 
 
 
@@ -303,33 +290,29 @@ def return_notify_page():
    if request.method == 'POST':
 
       if request.form['submit_button'] == 'Notify when price change .5%':
-         check_prices(current_user, .5, 0)
+         check_prices(current_user, .5, 0, new_email)
          percent = "Currently notifying at .5%"
       elif request.form['submit_button'] == 'Notify when price change 1%':
-         check_prices(current_user, 1, 0)
+         check_prices(current_user, 1, 0, new_email)
          percent = "Currently notifying at 1%"
       else:
          if request.form["newemail"] != "":
             new_email = request.form["newemail"]
             mydb.reconnect()  # reconnection to server
             mycursor = mydb.cursor()
-            print("new email "+new_email)
             sql = 'UPDATE userdata SET email = %s WHERE username = %s'
             val = (new_email,current_user)
             mycursor.execute(sql,val)
             mydb.commit()
       if stocks != "" or None:
         stocks = "Followed stocks: " + ", ".join(stocks) + "."
-      print(new_email)
-      return render_template('notify.html',error=stocks, curr_email=new_email, notity_percent=percent)
-
-      #update email
+      return render_template('notify.html',name=current_user, error=stocks, curr_email=new_email, notity_percent=percent)
    else:
 
       if stocks != "" or None:
          stocks = "Followed stocks: " + ", ".join(stocks) + "."
 
-      return render_template('notify.html',error=stocks, curr_email=user[0])
+      return render_template('notify.html',name=current_user,error=stocks, curr_email=user[0])
    
 
 @app.route('/discover')
