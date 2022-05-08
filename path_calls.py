@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, redirect, url_for
+from flask import Flask, render_template, request, session, redirect, url_for, redirect
 from flask_login import login_user,logout_user
 import hashlib
 from app import DS
@@ -46,8 +46,8 @@ def login(request):
 
             # Store User username to session
             session['username'] = username
-
-            return render_template('LandingPage.html')
+            return redirect("/LandingPage")
+            #return render_template('LandingPage.html')
         else :
             return render_template('LoginPage.html', error = "Wrong password")
 
