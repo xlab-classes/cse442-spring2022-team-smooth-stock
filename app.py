@@ -259,7 +259,7 @@ def news_information(username, email):
 import threading
 def check_prices(user, num, count, email):
    if count < 5:
-      threa = threading.Timer(5,startTimer,(user, num, count,email, ))
+      threa = threading.Timer(60,startTimer,(user, num, count,email, ))
       threa.daemon = True
       threa.start()
    #discord_notity('NVDA'+"This is just a test. No news yet")
