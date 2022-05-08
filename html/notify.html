@@ -21,7 +21,9 @@
 			
 			<div class="info">
 				<div class="tba">
-					<h1>User info:</h1>
+					<br />
+					<h1 class=name>User info: {{ name }}</h1>
+
 					{% if error %}
    					 <p class=error>{{ error }}
 						 {% endif %}
@@ -34,24 +36,30 @@
 				</div>
 			</div>
 			
+			<br />
 			<div class="setting">
+				<br />
+				<br />
 				<div>
 					<a href="https://discord.com/invite/fZfDuYUVh4" target="_blank"><button>Link to Discord Server for Notification</button></a>
 				</div>
 				
-				<div>
-					
-				</div>
-				
-
-
+				<br />
+				<br />
 				<form action="/notify" enctype="multipart/form-data" id="send_email" method="POST">
 					<input type="submit" name="submit_button" value="Notify when price change .5%">
 					<br />
+					<br />
+					<br />
 					<input type="submit" name="submit_button" value="Notify when price change 1%">
+					<br />
+					<br />
 					<br />
 					<input id="textbox_2" name="newemail" type="text" placeholder="{{curr_email}}" >
 					<input type="submit" name="submit_button" value="Change Email"></input>
+					<br />
+					<br />
+					<br />
 				</form>				
 						
 
@@ -81,10 +89,16 @@ div.info{
 div.setting{
 	left:50%;
 	position:absolute;
-	/*border: 3px solid #73AD21;*/
+	border: 3px solid;
 	text-align:center;
-	width: 50%;
+	width: 45%;
+	background-color:white;
+	margin-top: 5%;
+	/*border: 3px solid #73AD21;*/
+	padding-top: 1%;
+	padding-bottom: 1%;
 
+	border-radius: 25px;
 }
 
 button.but1{
