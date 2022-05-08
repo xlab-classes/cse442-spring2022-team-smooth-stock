@@ -101,6 +101,14 @@ def create_account() :
    elif request.method == "POST":  # post requst for form
       return path_calls.create_account(request)
 
+@app.route('/delete_account',methods =["GET", "POST"])
+def delete_account() :
+   if request.method == "GET" :  # get request for html
+      return render_template("delete_account.html")
+   elif request.method == "POST":  # post requst for form
+      return path_calls.delete_account(request)
+
+
 @app.route('/LandingPage')
 @login_required
 def return_landing_page():
@@ -122,7 +130,7 @@ def obtain(ticker):
 
     #build the price of the stock
     ask = "ask"
-    idx_ask = res_utf.find(ask)
+    idx_ask = res_utf.find("ask")
     build_price = ""
     counter = idx_ask
     while(res_utf[counter:counter+1] != ","):
@@ -140,7 +148,7 @@ def obtain(ticker):
     
 
     #buildthe display name
-    idx_display_name = res_utf.find("displayName")
+    idx_display_name = res_utf.find("longName")
     build_display_name = ""
     counter2 = idx_display_name
     while(res_utf[counter2:counter2+1]!= ","):

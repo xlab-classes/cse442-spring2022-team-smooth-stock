@@ -7,22 +7,13 @@
   integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
   crossorigin="anonymous"></script>
   <script src="{{url_for('static', filename='news-scripts.js')}}"></script>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='tb-style.css') }}" />
 
 
  <title>News</title>
 </head>
 
 <style>
-div#menubar {
-
-width:100%; 
-/* margin:auto;  */
-border:15px groove #CCCC99; 
-background-color:blue; 
-text-align:center;
-float: left;
-margin-right: 10px;
-}
 
 #news-table{
   font-family: arial, sans-serif;
@@ -50,14 +41,12 @@ color: blue;
 
 <body>
 
-<div id = "menubar">
-            <a href="442"><button>Stock Data</button></a>
-            <a href="notify"><button>Notifications</button></a>
-            <a href="discover"><button>Discover</button></a>
-            <a href="LandingPage"><button>Landing Page</button></a>
-            <a href="loginpage"><button  class="block">Login Page</button></a>
-            <a href="logout"><button>Logout</button></a>
-</div>
+  <div id = "topbar">
+    <a class="left" href="LandingPage"><button>Back</button></a>
+    <a href="discover"><button>Discover</button></a>
+    <a href="news"><button>News</button></a>
+    <a href="notify"><button>Notifications</button></a>
+  </div>
 <br />
 <br />
 <br />
