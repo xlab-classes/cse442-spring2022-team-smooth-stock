@@ -112,7 +112,8 @@ def delete_account() :
 @app.route('/LandingPage')
 @login_required
 def return_landing_page():
-   return render_template('LandingPage.html')
+    current_user = session.get('username')
+    return render_template('LandingPage.html',error="Logged in user: " + current_user)
 
 def obtain(ticker):
 
