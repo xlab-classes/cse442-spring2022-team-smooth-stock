@@ -3,7 +3,7 @@ from flask_login import login_user,logout_user
 import hashlib
 from app import DS
 from app import mydb, os
-from bs4 import BeautifulSoup
+import bs4
 import requests
 import mysql.connector
 import json
@@ -155,6 +155,21 @@ def save_yahoo_xml(url):
         response = requests.get(url)
         with open("a.xml", 'wb') as f:
                 f.write(response.content)
+
+def get_bing_search_results(ticker, limit=10):
+    zipped = []
+    counter = 0
+    url = "https://www.bing.com/news/search?q=" + ticker
+    request_result=requests.get( url )  
+    soup = bs4.BeautifulSoup(request_result.text, "html.parser")
+    links = soup.find_all('a', {'class': ['title']})
+    for l in links:
+        zipped.append((l.text, l['href'], "bing"))
+        counter +=1
+        if counter == limit:
+            return zipped
+    return zipped
+
 
 def parse_xml():
         save_yahoo_xml("https://finance.yahoo.com/rss/")
@@ -421,6 +436,7 @@ def return_discover_template_page(symbol):
         if symbol in lower or ticker_to_stock_name(symbol.upper()) in lower:
             filtered_news.append((title, link))
     print("------FILTERED NEWS------")
+    filtered_news = filtered_news + get_bing_search_results(symbol, 4)
     print(filtered_news)
     # Return html page to be rendered
     return render_template('discover_template.html', Stock_Name=stock_symbol, Company=company, Current_Stock_Price=current_stock_price, Current_plus_minus=current_plus_minus, Price_History=price_history, Fifty_Two_Week_Range=fifty_two_week_range, Fifty_Day_Average=fifty_day_average, Two_Hundred_Day_Average=two_hundred_day_average, EPS_Current_Year=eps_current_year, Price_EPS_Current_Year=price_eps_current_year, Average_Analyst_Rating=average_analyst_rating, Follow_Button=button_text, news=filtered_news)

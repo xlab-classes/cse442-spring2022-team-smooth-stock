@@ -78,12 +78,15 @@ def login_needed():
 @login_required
 def return_news():
    xml = path_calls.parse_xml()
+   bing_results = []
    unique_total_sources = []
    filtered_xml = []
    username = session.get('username')
    if username == None:
       username = "fakeuser"
    user_stocks = path_calls.get_user_stocks(username)
+   for stock in user_stocks:
+      bing_results += path_calls.get_bing_search_results(stock)
    for title, link, source in xml:
       lower = title.lower()
       for stock in user_stocks:
@@ -92,6 +95,7 @@ def return_news():
             filtered_xml.append((title, link, source))
             unique_total_sources.append(source)
    unique_total_sources = list(set(unique_total_sources))
+   filtered_xml = filtered_xml + bing_results
    return render_template('news.html', title=filtered_xml, sources=unique_total_sources)
 
 @app.route('/create_account',methods =["GET", "POST"])
@@ -424,8 +428,6 @@ def user_loader(user_id):
          print(x)
          return x
    return DS.User()
-
-
 
 
 
