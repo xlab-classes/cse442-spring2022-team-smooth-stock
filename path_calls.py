@@ -490,5 +490,60 @@ def ticker_to_stock_name(ticker):
         return "twitter" 
     else:
         return "not implemented"
+    
+def return_energy1_page_template():
+    table_head = "<tr id = 'joe'><div class = 'na'><th>Stock Name</th><th>Stock Price</th><th>Loss / Gain</th></div></tr>"
+
+    stocks_followed = ["MPC", "CLR", "FANG", "CNP", "TWTR", "WDC", "ATEN", "PLUG", "EA" ]
+    ret_list = []
+    for i in range(len(stocks_followed)):
+        cur = obtain(stocks_followed[i])
+        ret_list.insert(len(ret_list), cur)
+    for i in range(len(ret_list)):
+        s_name = ret_list[i][0]
+        s_price = ret_list[i][1]
+        percent = ret_list[i][2]
+        txt1 = "<tr><td>{stock_name}</td><td>{stock_price}</td><td>{to_decide}</td></tr>".format(stock_name=s_name,
+                                                                                                 stock_price=s_price,
+                                                                                                 to_decide=percent)
+        table_head += txt1
+    return render_template('energy1.html', generate_table=table_head)
+
+
+def return_tech1_page_template():
+    table_head = "<tr id = 'joe'><div class = 'na'><th>Stock Name</th><th>Stock Price</th><th>Loss / Gain</th></div></tr>"
+
+    stocks_followed = ["GOOG", "AAPL", "NVDA", "SWCH", "FB", "DIS", "EBAY", "UNP", "ISRG"]
+    ret_list = []
+    for i in range(len(stocks_followed)):
+        cur = obtain(stocks_followed[i])
+        ret_list.insert(len(ret_list), cur)
+    for i in range(len(ret_list)):
+        s_name = ret_list[i][0]
+        s_price = ret_list[i][1]
+        percent = ret_list[i][2]
+        txt1 = "<tr><td>{stock_name}</td><td>{stock_price}</td><td>{to_decide}</td></tr>".format(stock_name=s_name,
+                                                                                                 stock_price=s_price,
+                                                                                                 to_decide=percent)
+        table_head += txt1
+    return render_template('tech1.html', generate_table=table_head)
+
+def return_telecom1_page_template():
+    table_head = "<tr id = 'joe'><div class = 'na'><th>Stock Name</th><th>Stock Price</th><th>Loss / Gain</th></div></tr>"
+
+    stocks_followed = ["T", "VZ", "TMUS", "TEF", "AMT", "LBRDA", "AMOV", "MAXR" ]
+    ret_list = []
+    for i in range(len(stocks_followed)):
+        cur = obtain(stocks_followed[i])
+        ret_list.insert(len(ret_list), cur)
+    for i in range(len(ret_list)):
+        s_name = ret_list[i][0]
+        s_price = ret_list[i][1]
+        percent = ret_list[i][2]
+        txt1 = "<tr><td>{stock_name}</td><td>{stock_price}</td><td>{to_decide}</td></tr>".format(stock_name=s_name,
+                                                                                                 stock_price=s_price,
+                                                                                                 to_decide=percent)
+        table_head += txt1
+    return render_template('telecom1.html', generate_table=table_head)
 
 
